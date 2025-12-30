@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABHIMANYU LEARNING HUB - AISSEE Assessment</title>
+    <style>
+        :root { --primary: #1a237e; --secondary: #0d47a1; --accent: #ffd600; --text: #333; --bg: #f4f7f9; }
+        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        #watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 2.2rem; color: rgba(0,0,0,0.05); pointer-events: none; z-index: 9999; text-align: center; width: 150%; font-weight: bold; }
+        .container { max-width: 850px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; z-index: 10; min-height: 550px; display: flex; flex-direction: column; }
+        h1 { color: var(--primary); font-size: 2.5rem; text-align: center; margin: 0; text-transform: uppercase; }
+        .subtitle { text-align: center; color: var(--secondary); font-weight: 600; margin-bottom: 30px; letter-spacing: 1px; }
+        .screen { display: none; height: 100%; animation: fadeIn 0.3s ease-in-out; flex-direction: column; }
+        .screen.active { display: flex !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn { display: block; width: 220px; margin: 20px auto; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: bold; text-align: center; }
+        .instruction-box { background: #f8f9fa; padding: 25px; border-left: 5px solid var(--primary); line-height: 1.8; font-size: 1rem; }
+        .timer-bar { background: var(--primary); color: #fff; padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        .q-header { font-size: 0.9rem; color: #666; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; }
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.5; color: #000; font-weight: 500; }
+        .options-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .option-item { padding: 14px 20px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 1.1rem; }
+        .option-item:hover { border-color: var(--primary); background: #f0f2ff; }
+        .shape-container { margin: 20px 0; text-align: center; background: #fff; padding: 10px; border: 1px solid #eee; }
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .result-table th, .result-table td { padding: 12px; border: 1px solid #eee; text-align: center; }
+        .result-table th { background: var(--primary); color: white; }
+        .score-big { font-size: 2.5rem; text-align: center; color: var(--primary); margin: 15px 0; font-weight: 800; }
+        .locked-screen { text-align: center; padding: 100px 20px; color: #d32f2f; font-size: 1.4rem; font-weight: bold; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div id="watermark">© Abhimanyu Learning Hub (ALH) | Unauthorized Copying Prohibited</div>
+    <div class="container">
+        <div id="scr-1" class="screen active">
+            <h1>ABHIMANYU LEARNING HUB</h1>
+            <p class="subtitle">PREPARE YOU FOR THE BEST RESULT</p>
+            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center;">
+                <svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#1a237e" stroke-width="1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <button class="btn" onclick="goToInstructions()">NEXT</button>
+        </div>
+
+        <div id="scr-2" class="screen">
+            <h2 style="text-align:center;">INSTRUCTIONS</h2>
+            <div class="instruction-box">
+                1. This question paper contains 125 questions of 300 Marks divided into four sections. [cite: 2, 3]<br>
+                2. Mathematics – 50 Questions – 3 Marks each – Total 150 Marks. [cite: 5]<br>
+                3. Intelligence – 25 Questions – 2 Marks each – Total 50 Marks. [cite: 294]<br>
+                4. Language – 25 Questions – 2 Marks each – Total 50 Marks. [cite: 438]<br>
+                5. General Knowledge – 25 Questions – 2 Marks each – Total 50 Marks. [cite: 571]<br>
+                6. There is no negative marking. All questions are compulsory. <br>
+                7. Time Duration: 2 Hours 30 Minutes (150 Minutes). [cite: 4]<br>
+                8. You can only attempt this exam once.
+            </div>
+            <button class="btn" onclick="startExam()">START EXAM</button>
+        </div>
+
+        <div id="scr-3" class="screen">
+            <div class="timer-bar">
+                <span id="display-sec">SECTION</span>
+                <span id="display-time">02:30:00</span>
+            </div>
+            <div class="q-header">
+                <span id="display-count">Question 1 / 125</span>
+            </div>
+            <div id="q-body"></div>
+            <div id="opt-body" class="options-list"></div>
+        </div>
+
+        <div id="scr-4" class="screen">
+            <h2 style="text-align:center;">EXAM SUMMARY</h2>
+            <div class="score-big" id="final-total">0 / 300</div>
+            <p style="text-align:center; font-weight:bold;" id="final-correct">Correct: 0 / 125</p>
+            <table class="result-table">
+                <thead><tr><th>Section</th><th>Correct</th><th>Marks</th></tr></thead>
+                <tbody id="stat-body"></tbody>
+            </table>
+            <p style="text-align: center; font-weight: bold; color: #d32f2f; margin-top: 25px;">This test cannot be attempted again.</p>
+        </div>
+
+        <div id="scr-locked" class="screen">
+            <div class="locked-screen">You have already attempted this test.<br>Re-attempt is not allowed.</div>
+        </div>
+    </div>
+
+    <script>
+const TEST_LOCK_KEY = "ALH_TEST_3_LOCK";
+
+        (function() {
+            // FULL DATASET: 125 Questions from AISSEE Mock Test [cite: 1]
+            const _qData = [
+                /* Mathematics (1-50) [cite: 5, 700] */
+                {q:"What is the value of 4567+5896?", o:["10463","10563","10363","10263"], a:0, s:"Mathematics", m:3},
+                {q:"Subtract: 9243-3876 =?", o:["5367","5467","5267","5567"], a:0, s:"Mathematics", m:3},
+                {q:"Multiply: 345 x 78", o:["26910","26810","27010","26710"], a:0, s:"Mathematics", m:3},
+                {q:"What is 6336 ÷ 16?", o:["386","396","406","376"], a:1, s:"Mathematics", m:3},
+                {q:"Find the LCM of 15, 20, and 25:", o:["200","250","300","350"], a:2, s:"Mathematics", m:3},
+                {q:"What is the HCF of 36, 54, and 72?", o:["12","18","9","6"], a:1, s:"Mathematics", m:3},
+                {q:"Which number is divisible by both 5 and 9?", o:["120","135","150","160"], a:1, s:"Mathematics", m:3},
+                {q:"How many prime numbers are there between 20 and 40?", o:["3","4","5","6"], a:1, s:"Mathematics", m:3},
+                {q:"The product of first 5 natural numbers is:", o:["100","110","120","130"], a:2, s:"Mathematics", m:3},
+                {q:"If 8x - 12 = 52, find the value of x:", o:["6","7","8","9"], a:2, s:"Mathematics", m:3},
+                {q:"Find 15% of 960:", o:["134","140","144","150"], a:2, s:"Mathematics", m:3},
+                {q:"Convert 7/8 into percentage:", o:["85.5%","87.5%","88.5%","90%"], a:1, s:"Mathematics", m:3},
+                {q:"A bicycle bought for ₹3200 is sold for ₹2880. Loss percentage?", o:["8%","10%","12%","15%"], a:1, s:"Mathematics", m:3},
+                {q:"Simple interest on ₹5000 at 8% p.a. for 2 years:", o:["₹600","₹700","₹800","₹900"], a:2, s:"Mathematics", m:3},
+                {q:"Two numbers in ratio 5:7. Sum is 144. Smaller number?", o:["50","55","60","65"], a:2, s:"Mathematics", m:3},
+                {q:"A bus travels 360 km in 6 hours. Speed?", o:["50 km/h","55 km/h","60 km/h","65 km/h"], a:2, s:"Mathematics", m:3},
+                {q:"If 5:8 = x:72, then find x:", o:["40","42","45","48"], a:2, s:"Mathematics", m:3},
+                {q:"Area of rectangle is 180 cm². Length is 15 cm. Find breadth:", o:["10 cm","11 cm","12 cm","13 cm"], a:2, s:"Mathematics", m:3},
+                {q:"In triangle PQR, if angle P=65° and Q=48°, what is R?", o:["63°","65°","67°","69°"], a:2, s:"Mathematics", m:3, svg: '<svg width="100" height="100" viewBox="0 0 100 100"><path d="M50 10 L10 80 L90 80 Z" fill="none" stroke="black" stroke-width="2"/><text x="45" y="8" font-size="10">P(65°)</text><text x="2" y="90" font-size="10">Q(48°)</text><text x="85" y="90" font-size="10">R(?)</text></svg>'},
+                {q:"What is the perimeter of a square with side 22 cm?", o:["84 cm","86 cm","88 cm","90 cm"], a:2, s:"Mathematics", m:3},
+                {q:"Find the perimeter of the shaded L-shaped figure (Height 8cm, Bottom 12cm, Inner corner 4cm/6cm):", o:["40 cm","44 cm","48 cm","52 cm"], a:2, s:"Mathematics", m:3, svg: '<svg width="120" height="100" viewBox="0 0 120 100"><path d="M10 10 V90 H110 V50 H50 V10 Z" fill="#ccc" stroke="black" stroke-width="2"/><text x="0" y="55" font-size="10">8cm</text><text x="55" y="100" font-size="10">12cm</text></svg>'},
+                {q:"Area of circle with diameter 28 cm (π=22/7):", o:["616 cm²","626 cm²","636 cm²","646 cm²"], a:0, s:"Mathematics", m:3},
+                {q:"Total surface area of a cube with edge 4 cm?", o:["84 cm²","90 cm²","96 cm²","102 cm²"], a:2, s:"Mathematics", m:3},
+                {q:"If 15 oranges cost ₹180, what is the cost of 8 oranges?", o:["₹90","₹96","₹102","₹108"], a:1, s:"Mathematics", m:3},
+                {q:"Solve: 72 ÷ 8 + 15 x 2 - 5", o:["30","34","38","42"], a:1, s:"Mathematics", m:3},
+                {q:"A square garden has side 35 m. Find its area:", o:["1175 m²","1225 m²","1275 m²","1325 m²"], a:1, s:"Mathematics", m:3},
+                {q:"Express 0.875 as a fraction in lowest terms:", o:["7/8","5/6","3/4","4/5"], a:0, s:"Mathematics", m:3},
+                {q:"Which is the largest: 3/5, 5/8, 7/10, 4/5?", o:["3/5","5/8","7/10","4/5"], a:3, s:"Mathematics", m:3},
+                {q:"If 18 men build a wall in 12 days, how many will 24 men take?", o:["7 days","8 days","9 days","10 days"], a:2, s:"Mathematics", m:3},
+                {q:"Two angles are complementary. If one is 35°, find other:", o:["45°","50°","55°","60°"], a:2, s:"Mathematics", m:3, svg: '<svg width="100" height="100" viewBox="0 0 100 100"><path d="M10 90 H90 M10 90 V10 M10 90 L70 30" fill="none" stroke="black" stroke-width="2"/><text x="25" y="80" font-size="10">35°</text><text x="15" y="50" font-size="10">?</text></svg>'},
+                {q:"Average of 8 numbers is 42. One is 50, sum of remaining 7?", o:["276","286","296","306"], a:1, s:"Mathematics", m:3},
+                {q:"Car covers 200 m in 8 seconds. Speed in m/s?", o:["20 m/s","22 m/s","25 m/s","28 m/s"], a:2, s:"Mathematics", m:3},
+                {q:"If 35% of a number is 420, find number:", o:["1100","1150","1200","1250"], a:2, s:"Mathematics", m:3},
+                {q:"What is the square root of 2025?", o:["43","45","47","49"], a:1, s:"Mathematics", m:3},
+                {q:"Convert 3 hours 45 minutes into seconds:", o:["13200 s","13400 s","13500 s","13800 s"], a:2, s:"Mathematics", m:3},
+                {q:"If a:b=3:4 and b:c=5:6, find a:c:", o:["15:24","5:8","18:24","3:6"], a:0, s:"Mathematics", m:3},
+                {q:"How many sides does a hexagon have?", o:["5","6","7","8"], a:1, s:"Mathematics", m:3},
+                {q:"How many rectangles are in this figure?", o:["6","7","8","9"], a:0, s:"Mathematics", m:3, svg: '<svg width="100" height="60" viewBox="0 0 100 60"><rect x="10" y="10" width="80" height="40" fill="none" stroke="black" stroke-width="2"/><line x1="50" y1="10" x2="50" y2="50" stroke="black" stroke-width="2"/></svg>'},
+                {q:"Simplify: 3⁴ ÷ 3²", o:["3","9","27","81"], a:1, s:"Mathematics", m:3},
+                {q:"Shopkeeper had 480 pens. Sold 45%. How many remain?", o:["256","264","272","280"], a:1, s:"Mathematics", m:3},
+                {q:"Temp -3°C at night, increased 12°C afternoon. Afternoon temp?", o:["7°C","8°C","9°C","10°C"], a:2, s:"Mathematics", m:3},
+                {q:"If 9 notebooks cost ₹162, cost of 15 notebooks?", o:["₹260","₹270","₹280","₹290"], a:1, s:"Mathematics", m:3},
+                {q:"Find next term: 5, 9, 15, 23, 33, ?", o:["43","45","47","49"], a:1, s:"Mathematics", m:3},
+                {q:"Cuboid dimensions 10x8x5 cm. Find volume:", o:["380 cm³","390 cm³","400 cm³","410 cm³"], a:2, s:"Mathematics", m:3},
+                {q:"Article costs ₹800 sold at 15% profit. Selling Price?", o:["₹900","₹920","₹940","₹960"], a:1, s:"Mathematics", m:3},
+                {q:"Face value of 5 in 85,432?", o:["5","50","500","5000"], a:0, s:"Mathematics", m:3},
+                {q:"Calculate: 5/6 - 2/3 + 1/2", o:["1/3","2/3","1/2","3/4"], a:1, s:"Mathematics", m:3},
+                {q:"At 6:00, angle between hands?", o:["170°","175°","180°","185°"], a:2, s:"Mathematics", m:3},
+                {q:"Perimeter 48 cm, length 14 cm. Area?", o:["130 cm²","135 cm²","140 cm²","145 cm²"], a:2, s:"Mathematics", m:3},
+                {q:"Number decreased 25% then increased 25%. Net change?", o:["0%","6.25% decrease","6.25% increase","No change"], a:1, s:"Mathematics", m:3},
+
+                /* Intelligence & Reasoning (51-75) [cite: 294, 756] */
+                {q:"Find odd one out: 8, 27, 64, 125, 144", o:["8","27","64","144"], a:3, s:"Intelligence", m:2},
+                {q:"Complete the pattern:", o:["Star","Circle","Hexagon","Dot"], a:0, s:"Intelligence", m:2, svg: '<svg width="150" height="40" viewBox="0 0 150 40"><circle cx="20" cy="20" r="15" fill="none" stroke="black"/><rect x="50" y="5" width="30" height="30" fill="none" stroke="black"/><path d="M100 35 L115 5 L130 35 Z" fill="none" stroke="black"/><text x="140" y="25">?</text></svg>'},
+                {q:"If ROSE is SPRF, then LILY is:", o:["MJMZ","MJKZ","LIHX","LKMZ"], a:0, s:"Intelligence", m:2},
+                {q:"Which figure continues: [•] [○○] [○○] [?]", o:["One dot","Two dots","Four dots","Three dots"], a:2, s:"Intelligence", m:2},
+                {q:"If MOTHER is NPUIFS, FATHER coded as?", o:["GBUIFS","GAVIFS","HCVJGT","GAUIGS"], a:0, s:"Intelligence", m:2},
+                {q:"Water image of 'BIRD':", o:["Reversed","Mirrored","Flipped vertically","Same"], a:2, s:"Intelligence", m:2},
+                {q:"Series: 4, 9, 16, 25, 36, ?", o:["45","47","49","51"], a:2, s:"Intelligence", m:2},
+                {q:"Correct top view of cube arrangement?", o:["5 cubes","6 cubes","7 cubes","8 cubes"], a:0, s:"Intelligence", m:2},
+                {q:"2nd Jan 2024 Tuesday, what was 2nd Jan 2025?", o:["Tuesday","Wednesday","Thursday","Friday"], a:2, s:"Intelligence", m:2},
+                {q:"Different word: Carrot, Potato, Tomato, Onion", o:["Carrot","Potato","Tomato","Onion"], a:2, s:"Intelligence", m:2},
+                {q:"Count total triangles in figure:", o:["7","8","9","10"], a:2, s:"Intelligence", m:2},
+                {q:"Man walks 4km E, left 3km. Direction from start?", o:["North-East","North-West","South-East","South-West"], a:0, s:"Intelligence", m:2},
+                {q:"Odd figure out?", o:["Option a","Option b","Option c","All same"], a:2, s:"Intelligence", m:2},
+                {q:"P is Q father. Q sister R. R brother S. P to S?", o:["Father","Grandfather","Uncle","Brother"], a:0, s:"Intelligence", m:2},
+                {q:"Complete: BA, DC, FE, HG, ?", o:["IJ","JI","IH","JK"], a:1, s:"Intelligence", m:2},
+                {q:"Next in pattern: [0] [0] [0] [ ] [?]", o:["O","Square","o","Dot"], a:0, s:"Intelligence", m:2},
+                {q:"Odd one: 11, 13, 17, 19, 21", o:["11","13","17","21"], a:3, s:"Intelligence", m:2},
+                {q:"If PEN=35, BAG=20, then BOOK=?", o:["40","42","44","46"], a:2, s:"Intelligence", m:2},
+                {q:"Series: 3, 9, 27, 81, ?", o:["162","189","216","243"], a:3, s:"Intelligence", m:2},
+                {q:"Girl walks 3km S, right 4km. Distance from start?", o:["4 km","5 km","6 km","7 km"], a:1, s:"Intelligence", m:2},
+                {q:"Missing: 2, 5, 11, 23, 47, ?", o:["85","91","95","99"], a:2, s:"Intelligence", m:2},
+                {q:"If BLUE is 48, GREEN 55, then WHITE?", o:["58","60","62","64"], a:2, s:"Intelligence", m:2},
+                {q:"Mirror image 'MOM':", o:["WOW","MOM","Reversed","WOM"], a:1, s:"Intelligence", m:2},
+                {q:"Amit 12th from L, 18th from R. Total?", o:["28","29","30","31"], a:1, s:"Intelligence", m:2},
+                {q:"Complete: Z1, Y2, X3, W4, ?", o:["V5","U5","V6","U6"], a:0, s:"Intelligence", m:2},
+
+                /* English Language (76-100) [cite: 438, 784] */
+                {q:"Correct spelling:", o:["Accommodate","Acommodate","Acomodate","Accomodate"], a:0, s:"Language", m:2},
+                {q:"Antonym 'Difficult':", o:["Hard","Easy","Complex","Tough"], a:1, s:"Language", m:2},
+                {q:"Synonym 'Happy':", o:["Sad","Angry","Joyful","Tired"], a:2, s:"Language", m:2},
+                {q:"They ____ playing cricket now.", o:["is","are","was","were"], a:1, s:"Language", m:2},
+                {q:"Verb in 'The bird flies high.':", o:["bird","flies","high","the"], a:1, s:"Language", m:2},
+                {q:"Plural of 'Mouse':", o:["Mouses","Mice","Mices","Mouse's"], a:1, s:"Language", m:2},
+                {q:"Correct sentence:", o:["She have voice","She has voice","She having","She had has"], a:1, s:"Language", m:2},
+                {q:"Past tense 'Teach':", o:["Teached","Taught","Teach","Teaching"], a:1, s:"Language", m:2},
+                {q:"'I want to be ____ doctor.':", o:["a","an","the","none"], a:0, s:"Language", m:2},
+                {q:"Adverb in 'She sings beautifully.':", o:["She","sings","beautifully","none"], a:2, s:"Language", m:2},
+                {q:"'The cat is hiding ____ the table.':", o:["on","under","at","in"], a:1, s:"Language", m:2},
+                {q:"Opposite 'Strong':", o:["Powerful","Weak","Mighty","Hard"], a:1, s:"Language", m:2},
+                {q:"'Work hard ____ you will succeed.':", o:["and","but","or","because"], a:0, s:"Language", m:2},
+                {q:"Pronoun in 'He gave me a gift.':", o:["gave","me","gift","both"], a:1, s:"Language", m:2},
+                {q:"Place where books are kept:", o:["Museum","Library","Laboratory","Auditorium"], a:1, s:"Language", m:2},
+                {q:"'This is ____ useful book.':", o:["a","an","the","none"], a:0, s:"Language", m:2},
+                {q:"Correct sentence:", o:["They was","They were","They is","They are"], a:1, s:"Language", m:2},
+                {q:"Feminine of 'King':", o:["Kinge","Kingess","Queen","Princess"], a:2, s:"Language", m:2},
+                {q:"Correct spelling:", o:["Separate","Seperate","Separete","Seprate"], a:0, s:"Language", m:2},
+                {q:"Type: 'How beautiful the flower is!':", o:["Declarative","Interrogative","Imperative","Exclamatory"], a:3, s:"Language", m:2},
+                {q:"'Delhi' is a:", o:["Proper","Common","Collective","Abstract"], a:0, s:"Language", m:2},
+                {q:"'Each students ____ present.':", o:["are","is","were","have"], a:1, s:"Language", m:2},
+                {q:"Meaning 'Break the ice':", o:["Break thing","Conversation","Cold","Play"], a:1, s:"Language", m:2},
+                {q:"Conjunction in 'Ram and Shyam are friends.':", o:["Ram","and","are","friends"], a:1, s:"Language", m:2},
+                {q:"Punctuation: 'Where are you going_':", o:[".","!","?",","], a:2, s:"Language", m:2},
+
+                /* General Knowledge (101-125) [cite: 571] */
+                {q:"Who is 'Iron Man of India'?", o:["Gandhi","Nehru","Sardar Patel","Singh"], a:2, s:"General Knowledge", m:2},
+                {q:"Largest state in India by area?", o:["MH","MP","Rajasthan","UP"], a:2, s:"General Knowledge", m:2},
+                {q:"How many UTs in India?", o:["6","7","8","9"], a:2, s:"General Knowledge", m:2},
+                {q:"Planet closest to Sun?", o:["Venus","Mercury","Earth","Mars"], a:1, s:"General Knowledge", m:2},
+                {q:"Who composed 'Vande Mataram'?", o:["Tagore","Chatterjee","Naidu","Iqbal"], a:1, s:"General Knowledge", m:2},
+                {q:"National bird of India:", o:["Peacock","Parrot","Sparrow","Eagle"], a:0, s:"General Knowledge", m:2},
+                {q:"Smallest continent?", o:["Europe","Antarctica","Australia","SA"], a:2, s:"General Knowledge", m:2},
+                {q:"Longest river in world?", o:["Amazon","Nile","Ganga","Yangtze"], a:1, s:"General Knowledge", m:2},
+                {q:"First President of India?", o:["Rajendra Prasad","Radhakrishnan","Kalam","Hussain"], a:0, s:"General Knowledge", m:2},
+                {q:"National game of India:", o:["Cricket","Hockey","Football","Kabaddi"], a:1, s:"General Knowledge", m:2},
+                {q:"Gas humans exhale:", o:["Oxygen","Nitrogen","CO2","H2"], a:2, s:"General Knowledge", m:2},
+                {q:"How many months have 31 days?", o:["5","6","7","8"], a:2, s:"General Knowledge", m:2},
+                {q:"Who invented light bulb?", o:["Edison","Tesla","Bell","Franklin"], a:0, s:"General Knowledge", m:2},
+                {q:"Currency of USA:", o:["Pound","Euro","Dollar","Yen"], a:2, s:"General Knowledge", m:2},
+                {q:"Highest mountain peak in India?", o:["Everest","K2","Kanchenjunga","Nanda Devi"], a:2, s:"General Knowledge", m:2},
+                {q:"Republic Day of India:", o:["15 Aug","26 Jan","2 Oct","14 Nov"], a:1, s:"General Knowledge", m:2},
+                {q:"Freezing point of water:", o:["-5°C","0°C","5°C","10°C"], a:1, s:"General Knowledge", m:2},
+                {q:"'Ganga of South India'?", o:["Krishna","Godavari","Cauvery","Narmada"], a:2, s:"General Knowledge", m:2},
+                {q:"Who wrote 'Discovery of India'?", o:["Gandhi","Nehru","Ambedkar","Tagore"], a:1, s:"General Knowledge", m:2},
+                {q:"Players in football team:", o:["9","10","11","12"], a:2, s:"General Knowledge", m:2},
+                {q:"'Sunshine Vitamin'?", o:["A","B","C","D"], a:3, s:"General Knowledge", m:2},
+                {q:"National tree of India:", o:["Neem","Banyan","Peepal","Mango"], a:1, s:"General Knowledge", m:2},
+                {q:"Author of 'Gitanjali'?", o:["Premchand","Tagore","Narayan","Bond"], a:1, s:"General Knowledge", m:2},
+                {q:"Holi is festival of:", o:["Lights","Colors","Harvest","Victory"], a:1, s:"General Knowledge", m:2},
+                {q:"Colors in rainbow:", o:["5","6","7","8"], a:2, s:"General Knowledge", m:2}
+            ];
+
+            let curr = 0;
+            let score = 0;
+            let userAns = [];
+            let timeLeft = 150 * 60; 
+            let timer;
+
+            window.goToInstructions = function() {
+                if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+    			showScreen('scr-locked');
+                } else {
+                    showScreen('scr-2');
+                }
+            };
+
+            window.startExam = function() {
+                showScreen('scr-3');
+                loadQ();
+                timer = setInterval(tick, 1000);
+            };
+
+            function showScreen(id) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            }
+
+            function tick() {
+                if (timeLeft <= 0) { clearInterval(timer); endExam(); return; }
+                timeLeft--;
+                let h = Math.floor(timeLeft / 3600);
+                let m = Math.floor((timeLeft % 3600) / 60);
+                let s = timeLeft % 60;
+                document.getElementById('display-time').innerText = 
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }
+
+            function loadQ() {
+                const qObj = _qData[curr];
+                document.getElementById('display-sec').innerText = qObj.s;
+                document.getElementById('display-count').innerText = `Question ${curr + 1} / 125`;
+                let qHtml = `<div class="question-text">${qObj.q}</div>`;
+                if(qObj.svg) qHtml += `<div class="shape-container">${qObj.svg}</div>`;
+                document.getElementById('q-body').innerHTML = qHtml;
+                let oHtml = '';
+                qObj.o.forEach((opt, i) => {
+                    oHtml += `<div class="option-item" onclick="handleSelect(${i})">${String.fromCharCode(65+i)}. ${opt}</div>`;
+                });
+                document.getElementById('opt-body').innerHTML = oHtml;
+                window.scrollTo(0, 0);
+            }
+
+            window.handleSelect = function(idx) {
+                userAns.push(idx);
+                if (curr < 124) { curr++; loadQ(); } else { endExam(); }
+            };
+
+            function endExam() {
+                clearInterval(timer);
+                localStorage.setItem(TEST_LOCK_KEY, 'DONE');
+                let correctCount = 0;
+                let stats = {
+                    "Mathematics": {c:0, m:0},
+                    "Intelligence": {c:0, m:0},
+                    "Language": {c:0, m:0},
+                    "General Knowledge": {c:0, m:0}
+                };
+                _qData.forEach((q, i) => {
+                    if (userAns[i] === q.a) {
+                        stats[q.s].c++;
+                        stats[q.s].m += q.m;
+                        score += q.m;
+                        correctCount++;
+                    }
+                });
+                document.getElementById('final-total').innerText = `${score} / 300`;
+                document.getElementById('final-correct').innerText = `Correct: ${correctCount} / 125`;
+                let tableHtml = '';
+                for (let sec in stats) {
+                    tableHtml += `<tr><td>${sec}</td><td>${stats[sec].c}</td><td>${stats[sec].m}</td></tr>`;
+                }
+                document.getElementById('stat-body').innerHTML = tableHtml;
+                showScreen('scr-4');
+            }
+
+            if (localStorage.getItem('alh_submitted') === 'true') {
+                showScreen('scr-locked');
+            }
+
+            document.onkeydown = (e) => {
+                if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) return false;
+            };
+        })();
+    </script>
+</body>
+</html>
