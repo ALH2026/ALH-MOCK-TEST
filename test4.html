@@ -218,14 +218,25 @@ let timeLeft = 150 * 60;
         }
 
         function tick() {
-            if (timeLeft <= 0) { clearInterval(timer); endExam(); return; }
-            timeLeft--;
-            let h = Math.floor(timeLeft / 3600);
-            let m = Math.floor((timeLeft % 3600) / 60);
-            let s = timeLeft % 60;
-            document.getElementById('display-time').innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        endExam();
+        return;
+    }
+
+    timeLeft--;
+
+    const timeEl = document.getElementById('display-time');
+    if (!timeEl) return;   // 🔴 IMPORTANT FIX
+
+    let h = Math.floor(timeLeft / 3600);
+    let m = Math.floor((timeLeft % 3600) / 60);
+    let s = timeLeft % 60;
+
+    timeEl.innerText =
+        `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+}
+
 
         function loadQ() {
             const qObj = _qData[curr];
@@ -285,3 +296,4 @@ let timeLeft = 150 * 60;
 </script>
 
 </body> </html>
+
