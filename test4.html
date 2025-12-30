@@ -190,20 +190,20 @@ const sections = ["Mathematics", "Intelligence & Reasoning", "English", "General
             {q:"Who invented the printing press?", o:["Thomas Edison","Johannes Gutenberg","Benjamin Franklin","James Watt"], a:1, s:"General Knowledge", m:2}
         ];
 
-        let currentQ = 0;
-let scoreArr = [0,0,0,0];
+        let curr = 0;        // current question index
+let userAns = [];   // stores answers
+let score = 0;      // total score
 let timer;
 let timeLeft = 150 * 60;
 
         window.navTo = function(id) {
-            if (localStorage.getItem(TEST_LOCK_KEY) === "DONE") {
+    if (localStorage.getItem(TEST_LOCK_KEY) === "DONE") {
         showScreen('scr-locked');
-        return true;
+        return;
     }
-    return false;
-}
-            showScreen(id);
-        };
+    showScreen(id);
+};
+
 
         window.startTest = function() {
             showScreen('scr-3');
@@ -276,13 +276,12 @@ let timeLeft = 150 * 60;
             showScreen('scr-4');
         }
 
-        if (localStorage.getItem('alh_submitted_final_v3') === 'true') {
-            showScreen('scr-locked');
-        }
+        
 
         document.onkeydown = (e) => {
             if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) return false;
         };
     })();
 </script>
+
 </body> </html>
