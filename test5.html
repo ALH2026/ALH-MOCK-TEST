@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>AISSEE Mock Test 5 - Abhimanyu Learning Hub</title> <style> :root { --primary: #1a73e8; --bg: #f8f9fa; --text: #202124; } body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; user-select: none; -webkit-user-select: none; } #app { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; min-height: 400px; z-index: 10; } .screen { display: none; text-align: center; } .active { display: block; } h1 { color: #d93025; font-size: 2.5rem; margin-bottom: 5px; } .subtitle { font-weight: bold; color: #5f6368; margin-bottom: 30px; } .btn { background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 1.1rem; border-radius: 5px; cursor: pointer; transition: 0.3s; } .btn:hover { background: #1557b0; } .instruction-list { text-align: left; line-height: 1.8; margin-bottom: 30px; } #timer { position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; } .q-header { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; } .q-text { font-size: 1.2rem; text-align: left; margin-bottom: 20px; } .options { display: grid; gap: 10px; } .opt { border: 1px solid #dadce0; padding: 15px; border-radius: 5px; cursor: pointer; text-align: left; transition: 0.2s; } .opt:hover { background: #f1f3f4; border-color: var(--primary); } .diagram { margin: 20px auto; max-width: 100%; border: 1px solid #eee; padding: 10px; } .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 3rem; color: rgba(0,0,0,0.03); pointer-events: none; z-index: 1; white-space: nowrap; width: 100%; text-align: center; } .result-table { width: 100%; border-collapse: collapse; margin-top: 20px; } .result-table td, .result-table th { border: 1px solid #ddd; padding: 12px; text-align: left; } .result-table th { background: #f2f2f2; } .math-symbol { font-style: italic; } </style> </head> <body oncontextmenu="return false;"> <div class="watermark">© Abhimanyu Learning Hub (ALH) | Unauthorized Copying Prohibited</div> <div id="timer" style="display:none">Time Left: 150:00</div>
+
+<div id="app">
+    <div id="welcome" class="screen active">
+        <h1>ABHIMANYU LEARNING HUB</h1>
+        <p class="subtitle">PREPARE YOU FOR THE BEST RESULT</p>
+        <button class="btn" onclick="showScreen('instructions')">NEXT</button>
+    </div>
+
+    <div id="instructions" class="screen">
+        <h2>INSTRUCTIONS:</h2>
+        <div class="instruction-list">
+            1. This question paper contains 125 questions of 300 Marks divided into four sections.<br>
+            2. Each Section carries equal marks.<br>
+            &nbsp;&nbsp;• Mathematics – 50 Questions – 3 Marks each – Total 150 Marks<br>
+            &nbsp;&nbsp;• Intelligence (Reasoning) – 25 Questions – 2 Marks each – Total 50 Marks<br>
+            &nbsp;&nbsp;• Language (English) – 25 Questions – 2 Marks each – Total 50 Marks<br>
+            &nbsp;&nbsp;• General Knowledge – 25 Questions – 2 Marks each – Total 50 Marks<br>
+            3. There is no negative marking.<br>
+            4. Use of calculator is not permitted.<br>
+            5. All questions are compulsory.<br>
+            6. You can only attempt this exam once.
+        </div>
+        <button class="btn" onclick="startExam()">START EXAM</button>
+    </div>
+
+    <div id="exam" class="screen">
+        <div class="q-header">
+            <span id="section-name">Section</span>
+            <span id="q-counter">Question 1/125</span>
+        </div>
+        <div id="q-container">
+            <div class="q-text" id="q-text"></div>
+            <div id="q-diagram"></div>
+            <div class="options" id="options"></div>
+        </div>
+    </div>
+
+    <div id="result" class="screen">
+        <h2>EXAM RESULT</h2>
+        <div id="score-summary"></div>
+        <table class="result-table">
+            <thead>
+                <tr><th>Section</th><th>Correct</th><th>Marks</th></tr>
+            </thead>
+            <tbody id="result-body"></tbody>
+        </table>
+        <h3 style="color:#d93025; margin-top:30px;">This test cannot be attempted again.</h3>
+    </div>
+
+    <div id="lock" class="screen">
+        <h2 style="color:#d93025">Access Denied</h2>
+        <p>You have already attempted this test. Re-attempt is not allowed.</p>
+    </div>
+</div>
+
+<script>
+const TEST_LOCK_KEY = "ALH_TEST_5_LOCK";
+
+let currentQ = 0;
+let userAnswers = [];
+let score = 0;
+let timerInterval;
+let timeLeft = 150 * 60;
+    const _0x4f2 = {
+        s1: "Mathematics", s2: "Reasoning", s3: "English", s4: "General Knowledge",
+        t: 150 * 60,
+        q: [
+            // MATHS 1-50 (3 Marks)
+            {id:1, sec:1, txt:"A fruit seller had 1,245 apples. He sold 678 apples on Monday and 349 apples on Tuesday. How many apples are left with him?", opts:["218","318","228","208"], ans:0},
+            {id:2, sec:1, txt:"Find the value of: 456 × 8", opts:["3,648","3,548","3,748","3,448"], ans:0},
+            {id:3, sec:1, txt:"What is the LCM of 12 and 18?", opts:["36","72","54","48"], ans:0},
+            {id:4, sec:1, txt:"Simplify: 3/5 + 2/5", opts:["1","5/5","Both A and B","5/10"], ans:2},
+            {id:5, sec:1, txt:"A rectangle has a length of 15 cm and breadth of 8 cm. What is its perimeter?", opts:["46 cm","23 cm","120 cm","56 cm"], ans:0},
+            {id:6, sec:1, txt:"Convert 3.75 into a fraction in simplest form.", opts:["15/4","375/100","3/4","7/2"], ans:0},
+            {id:7, sec:1, txt:"What is the HCF of 24 and 36?", opts:["6","12","8","4"], ans:1},
+            {id:8, sec:1, txt:"If 2,456 ÷ 8 = ?", opts:["307","317","308","309"], ans:0},
+            {id:9, sec:1, txt:"A class has 45 students. If 3/5 of them are boys, how many girls are there?", opts:["18","27","15","20"], ans:0},
+            {id:10, sec:1, txt:"The sum of two numbers is 85. If one number is 37, what is the other number?", opts:["48","58","52","42"], ans:0},
+            {id:11, sec:1, txt:"Look at the figure below: AB=12 cm, BC=9 cm. What is the area of rectangle ABCD?", opts:["108 sq cm","42 sq cm","21 sq cm","84 sq cm"], ans:0, diag: `<svg width="200" height="120"><rect x="10" y="10" width="150" height="100" fill="none" stroke="black"/><text x="5" y="15">A</text><text x="165" y="15">B</text><text x="165" y="115">C</text><text x="5" y="115">D</text><text x="75" y="125">12 cm</text><text x="170" y="65">9 cm</text></svg>`},
+            {id:12, sec:1, txt:"Round off 4,567 to the nearest hundred.", opts:["4,500","4,600","4,570","5,000"], ans:1},
+            {id:13, sec:1, txt:"What is 15% of 200?", opts:["30","25","35","20"], ans:0},
+            {id:14, sec:1, txt:"A train travels 240 km in 4 hours. What is its speed?", opts:["60 km/hr","50 km/hr","70 km/hr","80 km/hr"], ans:0},
+            {id:15, sec:1, txt:"Simplify: 48 ÷ 6 + 3 × 4", opts:["20","24","18","16"], ans:0},
+            {id:16, sec:1, txt:"The product of 125 and 8 is:", opts:["1,000","900","1,100","800"], ans:0},
+            {id:17, sec:1, txt:"If a=5 and b=3, find the value of 2a + 3b", opts:["19","16","21","13"], ans:0},
+            {id:18, sec:1, txt:"Study the triangle ABC: Height (h)=6 cm, Base=10 cm. What is the area of triangle ABC?", opts:["60 sq cm","30 sq cm","50 sq cm","40 sq cm"], ans:1, diag: `<svg width="200" height="150"><path d="M100 20 L40 120 L160 120 Z" fill="none" stroke="black"/><line x1="100" y1="20" x2="100" y2="120" stroke="black" stroke-dasharray="4"/><text x="95" y="15">A</text><text x="30" y="130">B</text><text x="165" y="130">C</text><text x="105" y="70">h=6</text><text x="90" y="140">10 cm</text></svg>`},
+            {id:19, sec:1, txt:"Convert 5 km 250 m into meters.", opts:["5,250 m","5,025 m","525 m","52,500 m"], ans:0},
+            {id:20, sec:1, txt:"Which of the following is a prime number?", opts:["51","57","61","63"], ans:2},
+            {id:21, sec:1, txt:"Subtract: 7/9 - 4/9", opts:["3/9","1/3","Both A and B","11/9"], ans:2},
+            {id:22, sec:1, txt:"The average of 12, 18, 24, and 30 is:", opts:["21","22","20","24"], ans:0},
+            {id:23, sec:1, txt:"A book costs 145. How much will 7 such books cost?", opts:["1,015","1,025","1,005","1,115"], ans:0},
+            {id:24, sec:1, txt:"What is the place value of 7 in 87,654?", opts:["7,000","700","70","7"], ans:0},
+            {id:25, sec:1, txt:"If the perimeter of a square is 48 cm, what is the length of each side?", opts:["12 cm","24 cm","8 cm","16 cm"], ans:0},
+            {id:26, sec:1, txt:"Observe the clock: The hour hand is at 3 and minute hand is at 6. What time does the clock show?", opts:["3:30","6:15","3:00","6:03"], ans:0, diag: `<svg width="100" height="100"><circle cx="50" cy="50" r="45" fill="none" stroke="black"/><line x1="50" y1="50" x2="75" y2="50" stroke="black" stroke-width="3"/><line x1="50" y1="50" x2="50" y2="85" stroke="black" stroke-width="2"/><text x="45" y="15">12</text><text x="85" y="55">3</text><text x="48" y="95">6</text><text x="5" y="55">9</text></svg>`},
+            {id:27, sec:1, txt:"Arrange in ascending order: 0.7, 0.07, 0.007, 0.77", opts:["0.007, 0.07, 0.7, 0.77","0.77, 0.7, 0.07, 0.007","0.07, 0.007, 0.7, 0.77","0.007, 0.7, 0.07, 0.77"], ans:0},
+            {id:28, sec:1, txt:"The Roman numeral for 94 is:", opts:["LXXXXIV","XCIV","XCIIII","LXIV"], ans:1},
+            {id:29, sec:1, txt:"Find the missing number: 5, 10, 20, 40, ?", opts:["60","80","70","100"], ans:1},
+            {id:30, sec:1, txt:"The cost of 1 kg of sugar is 42. What will be the cost of 3.5 kg?", opts:["147","148","157","137"], ans:0},
+            {id:31, sec:1, txt:"How many sides does a hexagon have?", opts:["5","6","7","8"], ans:1},
+            {id:32, sec:1, txt:"If 3x = 27, then x = ?", opts:["7","8","9","10"], ans:2},
+            {id:33, sec:1, txt:"Convert 3 hours 45 minutes into minutes.", opts:["225 minutes","235 minutes","245 minutes","215 minutes"], ans:0},
+            {id:34, sec:1, txt:"The successor of the largest 4-digit number is:", opts:["9,999","10,000","10,001","9,998"], ans:1},
+            {id:35, sec:1, txt:"Multiply: 0.6 × 0.5", opts:["0.3","3.0","0.03","0.30"], ans:0},
+            {id:36, sec:1, txt:"If a car uses 5 liters of petrol to travel 75 km, how much petrol is needed for 225 km?", opts:["10 liters","15 liters","20 liters","25 liters"], ans:1},
+            {id:37, sec:1, txt:"The difference between the greatest and smallest 3-digit numbers is:", opts:["899","999","900","998"], ans:0},
+            {id:38, sec:1, txt:"What is 1/4 of 80?", opts:["20","40","10","30"], ans:0},
+            {id:39, sec:1, txt:"A dozen bananas cost 60. What is the cost of one banana?", opts:["5","4","6","3"], ans:0},
+            {id:40, sec:1, txt:"The sum of the angles in a triangle is:", opts:["180°","360°","90°","270°"], ans:0},
+            {id:41, sec:1, txt:"If 15 toys cost 450, what is the cost of 8 toys?", opts:["240","260","230","250"], ans:0},
+            {id:42, sec:1, txt:"What is the cube of 4?", opts:["16","64","12","48"], ans:1},
+            {id:43, sec:1, txt:"The perimeter of an equilateral triangle with each side 7 cm is:", opts:["14 cm","28 cm","21 cm","35 cm"], ans:2},
+            {id:44, sec:1, txt:"Divide 5.6 by 0.8", opts:["7","6","8","9"], ans:0},
+            {id:45, sec:1, txt:"A worker earns 350 per day. How much will he earn in 15 days?", opts:["5,250","5,000","5,350","4,950"], ans:0},
+            {id:46, sec:1, txt:"Find the value: (25+15) × 2", opts:["80","70","55","90"], ans:0},
+            {id:47, sec:1, txt:"How many milliliters are there in 2.5 liters?", opts:["250 ml","2,500 ml","25 ml","25,000 ml"], ans:1},
+            {id:48, sec:1, txt:"The smallest even number greater than 99 is:", opts:["100","101","98","102"], ans:0},
+            {id:49, sec:1, txt:"If a=8 and b=2, find: a² - b²", opts:["60","56","64","68"], ans:0},
+            {id:50, sec:1, txt:"A bag contains 5 red, 3 blue, and 4 green marbles. What is the total number of marbles?", opts:["11","12","13","14"], ans:1},
+
+            // REASONING 51-75 (2 Marks)
+            {id:51, sec:2, txt:"Find the odd one out: 2, 4, 6, 9, 10", opts:["2","4","9","10"], ans:2},
+            {id:52, sec:2, txt:"Complete the series: 3, 6, 12, 24, ?", opts:["36","48","40","32"], ans:1},
+            {id:53, sec:2, txt:"If PENCIL is coded as QFODIM, how is PAPER coded?", opts:["QBQFS","QBQFR","PBQFS","OBOFS"], ans:0},
+            {id:54, sec:2, txt:"How many triangles are there in the figure?", opts:["6","8","7","9"], ans:1, diag: `<svg width="100" height="100"><path d="M50 10 L10 90 L90 90 Z M50 10 L50 90 M10 90 L90 90 M10 90 L50 50 L90 90" fill="none" stroke="black"/></svg>`},
+            {id:55, sec:2, txt:"Which number comes next: 100, 95, 90, 85, ?", opts:["75","80","70","82"], ans:1},
+            {id:56, sec:2, txt:"Find the missing letter: A, C, F, J, ?", opts:["M","O","N","P"], ans:1},
+            {id:57, sec:2, txt:"If South-East becomes North-West, then North-East becomes:", opts:["South-West","South-East","North-West","South"], ans:0},
+            {id:58, sec:2, txt:"Pointing to a boy, Meera said, 'He is the son of my grandfather's only child.' How is the boy related to Meera?", opts:["Brother","Cousin","Uncle","Father"], ans:0},
+            {id:59, sec:2, txt:"Which figure completes the pattern? [○] [△] [□] | [▲] [□] [○] | [■] [○] [?]", opts:["■","△","▲","○"], ans:1},
+            {id:60, sec:2, txt:"Find the odd one: Rose, Lotus, Tulip, Potato", opts:["Rose","Lotus","Tulip","Potato"], ans:3},
+            {id:61, sec:2, txt:"In a certain code, if MOBILE is written as OQDKNG, what will LAPTOP be written as?", opts:["NCRRSQ","NCRRQP","NCQRSQ","MCRRSP"], ans:2},
+            {id:62, sec:2, txt:"Which word does NOT belong: Apple, Mango, Carrot, Banana?", opts:["Apple","Mango","Carrot","Banana"], ans:2},
+            {id:63, sec:2, txt:"Count the number of squares in a 3x3 grid figure.", opts:["12","14","17","15"], ans:1},
+            {id:64, sec:2, txt:"If 5+3=28, 4+6=40, then 7+2= ?", opts:["54","45","63","36"], ans:2},
+            {id:65, sec:2, txt:"Complete: ACE, FHJ, KMO, ?", opts:["PRT","QSU","PSU","PRS"], ans:0},
+            {id:66, sec:2, txt:"A is taller than B. C is shorter than B. Who is the shortest?", opts:["A","B","C","Cannot determine"], ans:2},
+            {id:67, sec:2, txt:"Mirror image of CLOCK will be:", opts:["OLOOK","KOOLC (reversed)","ADOLO","KOOFO"], ans:1},
+            {id:68, sec:2, txt:"Find the next number: 1, 4, 9, 16, 25, ?", opts:["30","36","35","49"], ans:1},
+            {id:69, sec:2, txt:"If CAT=24, DOG=26, then BAT=?", opts:["23","22","21","20"], ans:0},
+            {id:70, sec:2, txt:"Which one is different: 11, 13, 17, 18, 19", opts:["11","13","18","19"], ans:2},
+            {id:71, sec:2, txt:"In a row of children, Ravi is 7th from the left and 9th from the right. How many children are there in the row?", opts:["15","16","17","14"], ans:0},
+            {id:72, sec:2, txt:"If FRIEND is coded as GSJFOE, how is BROTHER coded?", opts:["CSPUIFS","CSUPIFS","CSPUIES","CRSUHFS"], ans:0},
+            {id:73, sec:2, txt:"Find the odd pair: 3-9, 4-16, 5-25, 6-30", opts:["3-9","4-16","5-25","6-30"], ans:3},
+            {id:74, sec:2, txt:"What comes next: Z, X, V, T, ?", opts:["R","S","Q","P"], ans:0},
+            {id:75, sec:2, txt:"A clock shows 3:15. What is the angle between the hour and minute hands?", opts:["0°","7.5°","15°","22.5°"], ans:1},
+
+            // ENGLISH 76-100 (2 Marks)
+            {id:76, sec:3, txt:"Choose the correctly spelled word:", opts:["Accomodation","Accommodation","Acommodation","Acomodation"], ans:1},
+            {id:77, sec:3, txt:"What is the plural of 'child'?", opts:["Childs","Children","Childes","Childrens"], ans:1},
+            {id:78, sec:3, txt:"Choose the antonym of 'honest':", opts:["Loyal","Truthful","Dishonest","Faithful"], ans:2},
+            {id:79, sec:3, txt:"Fill in the blank: She ____ to school every day.", opts:["go","goes","going","gone"], ans:1},
+            {id:80, sec:3, txt:"Identify the noun in: 'The dog barked loudly.'", opts:["The","dog","barked","loudly"], ans:1},
+            {id:81, sec:3, txt:"Choose the synonym of 'brave':", opts:["Coward","Fearful","Courageous","Weak"], ans:2},
+            {id:82, sec:3, txt:"Which article should be used: '____ elephant is a large animal'?", opts:["A","An","The","No article"], ans:1},
+            {id:83, sec:3, txt:"What is the past tense of 'write'?", opts:["Writed","Written","Wrote","Writing"], ans:2},
+            {id:84, sec:3, txt:"Identify the adjective: 'She wore a beautiful dress.'", opts:["She","wore","beautiful","dress"], ans:2},
+            {id:85, sec:3, txt:"Choose the correct sentence:", opts:["He don't like apples.","He doesn't likes apples.","He doesn't like apples.","He not like apples."], ans:2},
+            {id:86, sec:3, txt:"What is the meaning of 'enormous'?", opts:["Very small","Very large","Medium","Tiny"], ans:1},
+            {id:87, sec:3, txt:"Fill in the blank with correct preposition: 'The cat is ____ the table.'", opts:["in","on","at","of"], ans:1},
+            {id:88, sec:3, txt:"Choose the correctly punctuated sentence:", opts:["I like apples oranges and bananas.","I like apples, oranges, and bananas.","I like apples oranges, and bananas.","I like, apples oranges and bananas."], ans:1},
+            {id:89, sec:3, txt:"What type of sentence is this: 'Please close the door.'", opts:["Declarative","Interrogative","Imperative","Exclamatory"], ans:2},
+            {id:90, sec:3, txt:"Which word is a pronoun: 'They went to the market'?", opts:["They","went","to","market"], ans:0},
+            {id:91, sec:3, txt:"Choose the opposite of 'ancient':", opts:["Old","Modern","Historical","Past"], ans:1},
+            {id:92, sec:3, txt:"Fill in the blank: 'I have ____ brothers.'", opts:["two","to","too","tue"], ans:0},
+            {id:93, sec:3, txt:"What is the comparative form of 'good'?", opts:["Gooder","Best","Better","Goodest"], ans:2},
+            {id:94, sec:3, txt:"Identify the verb: 'The children play in the garden.'", opts:["children","play","in","garden"], ans:1},
+            {id:95, sec:3, txt:"Choose the correct spelling:", opts:["Necesary","Necessary","Neccessary","Neccesary"], ans:1},
+            {id:96, sec:3, txt:"What is the superlative form of 'big'?", opts:["Bigger","Biggest","More big","Most big"], ans:1},
+            {id:97, sec:3, txt:"Fill in the blank with correct conjunction: 'I will go to the park ____ it stops raining.'", opts:["but","when","or","so"], ans:1},
+            {id:98, sec:3, txt:"Choose the synonym of 'difficult':", opts:["Easy","Simple","Hard","Clear"], ans:2},
+            {id:99, sec:3, txt:"What is the female gender of 'lion'?", opts:["Lioneess","Lioness","Lionese","Lady lion"], ans:1},
+            {id:100, sec:3, txt:"Identify the adverb: 'He runs quickly.'", opts:["He","runs","quickly","None"], ans:2},
+
+            // GK 101-125 (2 Marks)
+            {id:101, sec:4, txt:"Who is known as the 'Father of the Nation' in India?", opts:["J. Nehru","M. Gandhi","S. Patel","S.C. Bose"], ans:1},
+            {id:102, sec:4, txt:"What is the capital of India?", opts:["Mumbai","Kolkata","New Delhi","Chennai"], ans:2},
+            {id:103, sec:4, txt:"How many colors are there in the Indian National Flag?", opts:["2","3","4","5"], ans:1},
+            {id:104, sec:4, txt:"Which planet is known as the 'Red Planet'?", opts:["Venus","Mars","Jupiter","Saturn"], ans:1},
+            {id:105, sec:4, txt:"Who wrote the National Anthem of India?", opts:["B.C. Chatterjee","R. Tagore","S. Naidu","S. Bharathi"], ans:1},
+            {id:106, sec:4, txt:"How many states are there in India?", opts:["28","29","27","30"], ans:0},
+            {id:107, sec:4, txt:"What is the national animal of India?", opts:["Lion","Elephant","Tiger","Peacock"], ans:2},
+            {id:108, sec:4, txt:"Which is the largest ocean in the world?", opts:["Atlantic","Indian","Pacific","Arctic"], ans:2},
+            {id:109, sec:4, txt:"What is the full form of UNESCO?", opts:["UN Ed, Sci and Cul Org","UN Eco and Soc Council Org","Universal Ed and Sci Org","UN Env and Sci Org"], ans:0},
+            {id:110, sec:4, txt:"Which is the smallest state in India by area?", opts:["Goa","Sikkim","Tripura","Manipur"], ans:0},
+            {id:111, sec:4, txt:"Who was the first Prime Minister of India?", opts:["M. Gandhi","J. Nehru","L.B. Shastri","I. Gandhi"], ans:1},
+            {id:112, sec:4, txt:"What is the national bird of India?", opts:["Parrot","Peacock","Sparrow","Eagle"], ans:1},
+            {id:113, sec:4, txt:"In which year did India gain independence?", opts:["1942","1945","1947","1950"], ans:2},
+            {id:114, sec:4, txt:"Which is the longest river in India?", opts:["Yamuna","Ganga","Godavari","Brahmaputra"], ans:1},
+            {id:115, sec:4, txt:"What is the currency of India?", opts:["Dollar","Pound","Rupee","Yen"], ans:2},
+            {id:116, sec:4, txt:"Who invented the telephone?", opts:["T. Edison","A.G. Bell","J. Watt","I. Newton"], ans:1},
+            {id:117, sec:4, txt:"Which gas do plants absorb from the atmosphere?", opts:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"], ans:2},
+            {id:118, sec:4, txt:"How many continents are there in the world?", opts:["5","6","7","8"], ans:2},
+            {id:119, sec:4, txt:"What is the national flower of India?", opts:["Rose","Lotus","Sunflower","Marigold"], ans:1},
+            {id:120, sec:4, txt:"Which is the highest mountain peak in the world?", opts:["K2","Mount Everest","Kanchenjunga","Nanda Devi"], ans:1},
+            {id:121, sec:4, txt:"What is the name of India's national song?", opts:["Jana Gana Mana","Vande Mataram","Saare Jahan Se Achha","Jai Hind"], ans:1},
+            {id:122, sec:4, txt:"How many Union Territories are there in India?", opts:["6","7","8","9"], ans:2},
+            {id:123, sec:4, txt:"Which festival is known as the 'Festival of Lights'?", opts:["Holi","Diwali","Eid","Christmas"], ans:1},
+            {id:124, sec:4, txt:"Who is known as the 'Missile Man of India'?", opts:["C.V. Raman","V. Sarabhai","A.P.J. Abdul Kalam","H. Bhabha"], ans:2},
+            {id:125, sec:4, txt:"What does green in the Indian flag represent?", opts:["Courage","Peace","Faith and fertility","None"], ans:2}
+        ]
+    };
+
+   
+
+    window.onload = function() {
+        if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+    showScreen('lock');
+}
+
+    };
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function startExam() {
+        showScreen('exam');
+        document.getElementById('timer').style.display = 'block';
+        startTimer();
+        loadQuestion();
+    }
+
+    function startTimer() {
+        let timeLeft = _0x4f2.t;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitExam();
+            }
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        const q = _0x4f2.q[currentQ];
+        const sectionNames = ["", _0x4f2.s1, _0x4f2.s2, _0x4f2.s3, _0x4f2.s4];
+        document.getElementById('section-name').innerText = sectionNames[q.sec];
+        document.getElementById('q-counter').innerText = `Question ${currentQ + 1} / 125`;
+        document.getElementById('q-text').innerText = q.txt;
+        
+        const diagBox = document.getElementById('q-diagram');
+        diagBox.innerHTML = q.diag || "";
+        
+        const optBox = document.getElementById('options');
+        optBox.innerHTML = "";
+        q.opts.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'opt';
+            div.innerText = `${String.fromCharCode(65 + idx)}) ${opt}`;
+            div.onclick = () => selectOption(idx);
+            optBox.appendChild(div);
+        });
+    }
+
+    function selectOption(idx) {
+        userAnswers[currentQ] = idx;
+        if (currentQ < _0x4f2.q.length - 1) {
+            currentQ++;
+            loadQuestion();
+        } else {
+            submitExam();
+        }
+    }
+
+    function submitExam() {
+        clearInterval(timerInterval);
+localStorage.setItem(TEST_LOCK_KEY, 'DONE');
+        document.getElementById('timer').style.display = 'none';
+        calculateResult();
+        showScreen('result');
+    }
+
+    function calculateResult() {
+        let stats = {
+            1: { c: 0, m: 0, t: 50, per: 3 },
+            2: { c: 0, m: 0, t: 25, per: 2 },
+            3: { c: 0, m: 0, t: 25, per: 2 },
+            4: { c: 0, m: 0, t: 25, per: 2 }
+        };
+
+        _0x4f2.q.forEach((q, i) => {
+            if (userAnswers[i] === q.ans) {
+                stats[q.sec].c++;
+                stats[q.sec].m += stats[q.sec].per;
+            }
+        });
+
+        let totalCorrect = stats[1].c + stats[2].c + stats[3].c + stats[4].c;
+        let totalMarks = stats[1].m + stats[2].m + stats[3].m + stats[4].m;
+
+        document.getElementById('score-summary').innerHTML = `<h3>Total Correct: ${totalCorrect} / 125</h3><h3>Total Marks: ${totalMarks} / 300</h3>`;
+
+        const tbody = document.getElementById('result-body');
+        tbody.innerHTML = `
+            <tr><td>Mathematics</td><td>${stats[1].c} / 50</td><td>${stats[1].m}</td></tr>
+            <tr><td>Reasoning</td><td>${stats[2].c} / 25</td><td>${stats[2].m}</td></tr>
+            <tr><td>Language (English)</td><td>${stats[3].c} / 25</td><td>${stats[3].m}</td></tr>
+            <tr><td>General Knowledge</td><td>${stats[4].c} / 25</td><td>${stats[4].m}</td></tr>
+        `;
+    }
+
+    // Security
+    document.onkeydown = function(e) {
+        if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 83)) return false;
+    };
+</script>
+</body> </html>
