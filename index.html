@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISSEE Mock Test - Abhimanyu Learning Hub</title>
+
+    <script>
+        /* =========================
+           TEST 1 – LOCK CONFIG
+        ========================== */
+        const TEST_LOCK_KEY = "ALH_TEST_1_LOCK";
+
+        // STEP 2: Check lock on page load
+        if (localStorage.getItem(TEST_LOCK_KEY) === "DONE") {
+            document.addEventListener("DOMContentLoaded", () => {
+                document.body.innerHTML = `
+                    <div style="text-align:center;margin-top:120px;font-family:Segoe UI;">
+                        <h2 style="color:red;">Test Already Attempted</h2>
+                        <p>This mock test can be attempted only once.</p>
+                        <p>Re-attempt is not allowed.</p>
+                    </div>
+                `;
+            });
+        }
+    </script>
+
+    <style>
+        :root { --primary: #1a237e; --secondary: #c62828; --bg: #f4f4f9; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; user-select: none; }
+        #watermark { position: fixed; bottom: 20px; right: 20px; opacity: 0.15; font-weight: bold; color: var(--primary); z-index: 1000; pointer-events: none; }
+        .container { width: 100%; max-width: 850px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
+        header { border-bottom: 3px solid var(--primary); margin-bottom: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .timer { color: var(--secondary); font-weight: bold; font-size: 20px; background: #ffebee; padding: 5px 15px; border-radius: 5px; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        .diag-box { text-align: center; margin: 15px 0; padding: 10px; background: #fdfdfd; border: 1px solid #eee; }
+        .question-text { font-size: 18px; margin-bottom: 20px; font-weight: 600; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .option { padding: 12px; border: 2px solid #eee; border-radius: 8px; cursor: pointer; }
+        .option:hover { border-color: var(--primary); background: #f0f2ff; }
+        .section-tag { background: var(--secondary); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
+        .progress { height: 8px; background: #eee; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    </style>
+</head>
+
+<body oncontextmenu="return false;">
+<div id="watermark">© Abhimanyu Learning Hub (ALH)</div>
+
+<div class="container">
+    <div id="welcome-screen" class="screen active">
+        <h1>AISSEE Mock Test - Set 1</h1>
+        <p>Abhimanyu Learning Hub | Entrance Excellence</p>
+        <input type="text" id="user-name" style="width:100%; padding:12px; margin:20px 0;" placeholder="Student Full Name">
+        <button class="btn" onclick="startInstructions()">Enter Exam</button>
+    </div>
+
+    <div id="instruction-screen" class="screen">
+        <h2>Instructions</h2>
+        <ul>
+            <li>Total Time: 150 Minutes (2.5 Hours)</li>
+            <li>Mathematics: 50 Qs (3 Marks each)</li>
+            <li>Reasoning, English, GK: 25 Qs each (2 Marks each)</li>
+            <li>No Negative Marking.</li>
+        </ul>
+        <button class="btn" onclick="startExam()">Start Test Now</button>
+    </div>
+
+    <div id="exam-screen" class="screen">
+        <header>
+            <div id="section-label"></div>
+            <div class="timer" id="timer-display">150:00</div>
+        </header>
+        <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+        <div id="diagram-area" class="diag-box"></div>
+        <div class="question-text" id="q-text"></div>
+        <div class="options-grid" id="options-area"></div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h1>Test Result</h1>
+        <h2 id="res-name"></h2>
+        <div style="font-size: 24px; color: var(--primary); margin: 20px 0;">
+            Total Marks: <span id="res-score"></span> / 300
+        </div>
+        <table>
+            <thead><tr><th>Section</th><th>Score</th></tr></thead>
+            <tbody id="res-body"></tbody>
+        </table>
+        <button class="btn" style="margin-top:20px" onclick="window.print()">Print Result</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && ['c','v','u','s'].includes(e.key.toLowerCase())) e.preventDefault();
+    });
+
+    const sections = ["Mathematics", "Reasoning", "English", "General Knowledge"];
+    const _db = [ /* YOUR QUESTION DATABASE – UNCHANGED */ ];
+
+    let currentQ = 0, userAnswers = [], timeLeft = 150 * 60, timer;
+
+    function startInstructions() {
+        const name = document.getElementById('user-name').value;
+        if (!name) return alert("Name required!");
+        localStorage.setItem("ALH_TEST_1_NAME", name);
+        switchScreen('instruction-screen');
+    }
+
+    function startExam() {
+        switchScreen('exam-screen');
+        render();
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`;
+            if (timeLeft <= 0) finish();
+        }, 1000);
+    }
+
+    function render() {
+        const q = _db[currentQ];
+        document.getElementById('section-label').innerHTML =
+            `<span class="section-tag">${sections[q.s]}</span> Q${currentQ+1}/125`;
+        document.getElementById('progress-fill').style.width = `${(currentQ/125)*100}%`;
+        document.getElementById('q-text').innerText = q.q;
+
+        const diag = document.getElementById('diagram-area');
+        diag.style.display = q.d ? 'block' : 'none';
+        diag.innerHTML = q.d || '';
+
+        const area = document.getElementById('options-area');
+        area.innerHTML = '';
+        q.o.forEach((opt, i) => {
+            const d = document.createElement('div');
+            d.className = 'option';
+            d.innerText = opt;
+            d.onclick = () => {
+                userAnswers[currentQ] = i;
+                currentQ++;
+                currentQ < 125 ? render() : finish();
+            };
+            area.appendChild(d);
+        });
+    }
+
+    function finish() {
+        clearInterval(timer);
+
+        // STEP 3: LOCK TEST AFTER SUBMIT
+        localStorage.setItem(TEST_LOCK_KEY, "DONE");
+        localStorage.setItem("ALH_TEST_1_ANS", JSON.stringify(userAnswers));
+
+        showResults();
+    }
+
+    function showResults() {
+        switchScreen('result-screen');
+        document.getElementById('res-name').innerText =
+            "Candidate: " + localStorage.getItem("ALH_TEST_1_NAME");
+
+        let score = 0, breakdown = [0,0,0,0];
+        const ans = JSON.parse(localStorage.getItem("ALH_TEST_1_ANS") || "[]");
+
+        _db.forEach((q, i) => {
+            if (ans[i] === q.a) {
+                const m = q.s === 0 ? 3 : 2;
+                score += m;
+                breakdown[q.s] += m;
+            }
+        });
+
+        document.getElementById('res-score').innerText = score;
+        document.getElementById('res-body').innerHTML =
+            sections.map((s,i)=>`<tr><td>${s}</td><td>${breakdown[i]}</td></tr>`).join('');
+    }
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+</script>
+</body>
+</html>
