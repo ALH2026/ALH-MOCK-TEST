@@ -87,7 +87,12 @@
     </div>
 
     <script>
-onst TEST_LOCK_KEY = "ALH_TEST_3_LOCK";
+const TEST_LOCK_KEY = "ALH_TEST_3_LOCK";
+let curr = 0;
+let userAns = [];
+let score = 0;
+let timer;
+let timeLeft = 150 * 60;
 
 document.addEventListener('keydown', e => {
     if (e.ctrlKey && ['c','v','u','s'].includes(e.key.toLowerCase())) {
@@ -235,17 +240,14 @@ const sections = ["Mathematics", "Intelligence & Reasoning", "English", "General
             let currentQ = 0;
 let scoreArr = [0,0,0,0];
 let timer;
-let timeLeft = 150 * 60; 
-            let timer;
-
-            window.goToInstructions = function() {
-                localStorage.setItem(TEST_LOCK_KEY, 'DONE');
- {
-                    showScreen('scr-locked');
-                } else {
-                    showScreen('scr-2');
-                }
-            };
+let timeLeft = 150 * 60;
+            window.goToInstructions = function () {
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        showScreen('scr-locked');
+    } else {
+        showScreen('scr-2');
+    }
+};
 
             window.startExam = function() {
                 showScreen('scr-3');
@@ -290,7 +292,8 @@ let timeLeft = 150 * 60;
 
             function endExam() {
                 clearInterval(timer);
-                localStorage.setItem('alh_submitted', 'true');
+localStorage.setItem(TEST_LOCK_KEY, 'DONE');
+
                 let correctCount = 0;
                 let stats = {
                     "Mathematics": {c:0, m:0},
@@ -316,10 +319,7 @@ let timeLeft = 150 * 60;
                 showScreen('scr-4');
             }
 
-            if (localStorage.getItem('alh_submitted') === 'true') {
-                showScreen('scr-locked');
-            }
-
+           
             document.onkeydown = (e) => {
                 if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) return false;
             };
