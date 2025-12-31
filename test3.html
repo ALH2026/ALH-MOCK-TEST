@@ -88,12 +88,6 @@
 
     <script>
 const TEST_LOCK_KEY = "ALH_TEST_3_LOCK";
-let curr = 0;
-let userAns = [];
-let score = 0;
-let timer;
-let timeLeft = 150 * 60;
-
 document.addEventListener('keydown', e => {
     if (e.ctrlKey && ['c','v','u','s'].includes(e.key.toLowerCase())) {
         e.preventDefault();
@@ -250,10 +244,15 @@ let timeLeft = 150 * 60;
 };
 
             window.startExam = function() {
-                showScreen('scr-3');
-                loadQ();
-                timer = setInterval(tick, 1000);
-            };
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        showScreen('scr-locked');
+        return;
+    }
+
+    showScreen('scr-3');
+    loadQ();
+    timer = setInterval(tick, 1000);
+};
 
             function showScreen(id) {
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -324,6 +323,11 @@ localStorage.setItem(TEST_LOCK_KEY, 'DONE');
                 if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) return false;
             };
         })();
+        if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+    document.body.innerHTML =
+        "<h2 style='text-align:center;color:red;margin-top:60px;'>This test has already been completed.</h2>";
+}
     </script>
 </body>
 </html>
+
