@@ -61,7 +61,6 @@ const TEST_LOCK_KEY = "ALH_TEST_5_LOCK";
 
 let currentQ = 0;
 let userAnswers = [];
-let score = 0;
 let timerInterval;
 let timeLeft = 150 * 60;
     const _0x4f2 = {
@@ -206,11 +205,11 @@ let timeLeft = 150 * 60;
    
 
     window.onload = function() {
-        if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
-    showScreen('lock');
-}
-
-    };
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        document.body.innerHTML =
+            "<h2 style='text-align:center;color:red;margin-top:60px;'>This test has already been completed.</h2>";
+    }
+};
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -218,25 +217,35 @@ let timeLeft = 150 * 60;
     }
 
     function startExam() {
-        showScreen('exam');
-        document.getElementById('timer').style.display = 'block';
-        startTimer();
-        loadQuestion();
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        showScreen('lock');
+        return;
     }
 
+    showScreen('exam');
+    document.getElementById('timer').style.display = 'block';
+    startTimer();
+    loadQuestion();
+}
+
     function startTimer() {
-        let timeLeft = _0x4f2.t;
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            let mins = Math.floor(timeLeft / 60);
-            let secs = timeLeft % 60;
-            document.getElementById('timer').innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                submitExam();
-            }
-        }, 1000);
-    }
+    timeLeft = _0x4f2.t;
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+
+        document.getElementById('timer').innerText =
+            `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            submitExam();
+        }
+    }, 1000);
+}
 
     function loadQuestion() {
         const q = _0x4f2.q[currentQ];
@@ -311,4 +320,5 @@ localStorage.setItem(TEST_LOCK_KEY, 'DONE');
         if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 83)) return false;
     };
 </script>
+
 </body> </html>
