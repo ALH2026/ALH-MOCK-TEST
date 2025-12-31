@@ -76,7 +76,7 @@
             <thead><tr><th>Section</th><th>Marks</th></tr></thead>
             <tbody id="res-body"></tbody>
         </table>
-        <button class="btn" style="margin-top:30px" onclick="window.print()">Print Results</button>
+        <button class="btn" onclick="alert('Printing disabled')">Print Results</button>
     </div>
 </div>
 
@@ -247,17 +247,24 @@ let timeLeft = 150 * 60;
 }
 
     function startExam() {
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        alert("This test has already been completed.");
+        return;
+    }
+
     showScreen('exam-screen');
     renderQ();
+
     timer = setInterval(() => {
         timeLeft--;
-        let m = Math.floor(timeLeft/60);
-        let s = timeLeft%60;
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
         document.getElementById('timer-display').innerText =
-            `${m}:${s<10?'0':''}${s}`;
+            `${m}:${s < 10 ? '0' : ''}${s}`;
         if (timeLeft <= 0) finalize();
     }, 1000);
 }
+
 
     function renderQ() {
     const d = _db[currentQ];
@@ -307,9 +314,12 @@ let timeLeft = 150 * 60;
 }
 window.onload = () => {
     if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
-        showResults();
+        document.body.innerHTML =
+            "<h2 style='text-align:center;color:red;margin-top:40px;'>This test has already been completed.</h2>";
     }
 };
+
 </script>
 </body>
+
 </html>
