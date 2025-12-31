@@ -206,10 +206,16 @@ let timeLeft = 150 * 60;
 
 
         window.startTest = function() {
-            showScreen('scr-3');
-            loadQ();
-            timer = setInterval(tick, 1000);
-        };
+    if (localStorage.getItem(TEST_LOCK_KEY) === "DONE") {
+        showScreen('scr-locked');
+        return;
+    }
+
+    showScreen('scr-3');
+    loadQ();
+    timer = setInterval(tick, 1000);
+};
+
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -234,7 +240,7 @@ let timeLeft = 150 * 60;
     let s = timeLeft % 60;
 
     timeEl.innerText =
-        `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
 }
 
 
@@ -293,7 +299,12 @@ let timeLeft = 150 * 60;
             if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) return false;
         };
     })();
+    if (localStorage.getItem(TEST_LOCK_KEY) === "DONE") {
+    document.body.innerHTML =
+        "<h2 style='text-align:center;color:red;margin-top:60px;'>This test has already been completed.</h2>";
+}
 </script>
 
 </body> </html>
+
 
