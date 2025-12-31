@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Test Paper 10 | ABHIMANYU LEARNING HUB</title>
+    <style>
+        :root { --primary: #1a237e; --secondary: #0d47a1; --accent: #ff6f00; --bg: #f5f7fa; --text: #212121; }
+        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; outline: none; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+        #watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 3.5vw; color: rgba(0,0,0,0.05); pointer-events: none; z-index: 1000; white-space: nowrap; font-weight: bold; }
+        .container { background: #fff; width: 95%; max-width: 850px; padding: 40px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); position: relative; z-index: 10; min-height: 650px; border-top: 8px solid var(--primary); display: flex; flex-direction: column; }
+        .screen { display: none; flex-direction: column; width: 100%; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { color: var(--primary); text-align: center; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
+        .subtitle { text-align: center; color: var(--accent); margin-bottom: 40px; font-weight: bold; letter-spacing: 1.5px; }
+        .btn { background: var(--primary); color: #fff; border: none; padding: 18px 50px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; transition: 0.3s; margin: 20px auto; font-weight: 800; display: block; width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .btn:hover { background: var(--secondary); transform: translateY(-2px); }
+        .exam-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        #timer-box { font-weight: bold; font-size: 1.3rem; color: #d32f2f; background: #ffebee; border: 2px solid #d32f2f; padding: 5px 15px; border-radius: 8px; }
+        .question-text { font-size: 1.3rem; margin-bottom: 25px; line-height: 1.5; font-weight: 600; color: #1a1a1a; }
+        .options { display: grid; gap: 12px; }
+        .option { padding: 15px 25px; border: 2px solid #e0e0e0; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 1.1rem; background: #fff; text-align: left; }
+        .option:hover { border-color: var(--primary); background: #f0f2ff; }
+        .diagram-container { background: #fafafa; border: 1px solid #ddd; border-radius: 12px; padding: 30px; margin-bottom: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex-direction: column; min-height: 250px; }
+        .result-table { width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 1.1rem; }
+        .result-table th, .result-table td { border: 1px solid #ddd; padding: 15px; text-align: center; }
+        .final-score-box { background: #f0f4f8; padding: 25px; border-radius: 10px; text-align: center; margin-bottom: 20px; border: 2px solid var(--primary); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="watermark">© ABHIMANYU LEARNING HUB (ALH)</div>
+
+    <div class="container">
+        <div id="scr-welcome" class="screen" style="display: flex;">
+            <h1>ABHIMANYU LEARNING HUB</h1>
+            <div class="subtitle">PREPARE YOU FOR THE BEST RESULT</div>
+            <button class="btn" onclick="document.getElementById('scr-welcome').style.display='none'; document.getElementById('scr-instr').style.display='flex';">NEXT</button>
+        </div>
+
+        <div id="scr-instr" class="screen">
+            <h1>INSTRUCTIONS</h1>
+            <div style="background:#f8f9fa; border-left:5px solid var(--primary); padding:25px; font-size:1.1rem; line-height:1.8;">
+                1. Questions: 125 | Total Marks: 300<br>
+                2. Mathematics: 50 Questions (3 Marks each)<br>
+                3. Sections B, C, D: 25 Questions each (2 Marks each)<br>
+                4. Duration: 150 Minutes | No Negative Marking.<br>
+                5. One attempt allowed. Re-attempts are blocked.
+            </div>
+            <button class="btn" onclick="startTestSafe()">START EXAM</button>
+        </div>
+
+        <div id="scr-exam" class="screen">
+            <div class="exam-header">
+                <div>
+                    <span id="q-sec-name" style="font-weight:800; color:var(--primary); display:block;">SECTION</span>
+                    <span id="q-count-text" style="color:#666;">Question 1 / 125</span>
+                </div>
+                <div id="timer-box">150:00</div>
+            </div>
+            <div class="question-text" id="q-text-area"></div>
+            <div id="q-diag-area"></div>
+            <div class="options" id="q-opt-area"></div>
+        </div>
+
+        <div id="scr-result" class="screen">
+            <h1>EXAM COMPLETED</h1>
+            <div class="final-score-box">
+                <p>Correct Questions: <strong id="res-correct">0</strong> / 125</p>
+                <h2>Total Marks Obtained: <span id="res-marks">0</span> / 300</h2>
+            </div>
+            <h3 style="text-align: center;">SECTION WISE BREAKDOWN</h3>
+            <table class="result-table">
+                <thead><tr style="background:var(--primary); color:#fff;"><th>Section</th><th>Correct</th><th>Marks</th></tr></thead>
+                <tbody id="res-tbody"></tbody>
+            </table>
+            <p style="text-align:center; color:red; font-weight:bold; border:2px dashed red; padding:15px;">ACCESS LOCKED: Paper 10 Completed.</p>
+        </div>
+    </div>
+
+<script>
+const TEST_LOCK_KEY = "ALH_TEST_10_LOCK";
+
+/* SAFE START FUNCTION (DO NOT MOVE) */
+function startTestSafe() {
+    if (localStorage.getItem(TEST_LOCK_KEY)) {
+        alert("This test has already been completed.");
+        return;
+    }
+    document.getElementById('scr-instr').style.display = 'none';
+    document.getElementById('scr-exam').style.display = 'flex';
+    initializeTest();
+}
+
+/* GLOBAL DATABASE LOADED AT STARTUP */
+const EXAM_QUESTIONS = [
+        /* MATHEMATICS 1-50 (3 Marks each) */
+        {s:"MATHEMATICS",q:"A school library has 6,543 books. If 3,789 books are borrowed, how many remain?",o:["2,754","2,854","2,654","2,764"],a:0,v:3},
+        {s:"MATHEMATICS",q:"Find the product: 856 × 7",o:["5,982","5,892","5,992","5,782"],a:2,v:3},
+        {s:"MATHEMATICS",q:"What is the HCF of 54 and 72?",o:["6","9","18","27"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Simplify: 14/17 - 8/17",o:["6/17","6/34","22/17","8/17"],a:0,v:3},
+        {s:"MATHEMATICS",q:"A square field has a perimeter of 96 m. What is the length of each side?",o:["20 m","22 m","24 m","26 m"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Convert 11/4 into a mixed number.",o:["2 1/4","2 2/4","2 3/4","3 1/4"],a:2,v:3},
+        {s:"MATHEMATICS",q:"What is the LCM of 18 and 24?",o:["36","48","72","144"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Divide: 8,568 ÷ 9 = ?",o:["942","952","962","972"],a:1,v:3},
+        {s:"MATHEMATICS",q:"A bag contains 240 candies. If 7/12 are chocolate flavored, how many are there?",o:["120","130","140","150"],a:2,v:3},
+        {s:"MATHEMATICS",q:"The product of two numbers is 336. If one is 21, find the other.",o:["14","15","16","17"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Look at the fraction wall. How many eighths (1/8) equal 3/4?",o:["4","5","6","7"],a:2,v:3,d:"wall"},
+        {s:"MATHEMATICS",q:"Round off 15,678 to the nearest hundred.",o:["15,600","15,700","15,680","16,000"],a:1,v:3},
+        {s:"MATHEMATICS",q:"What is 45% of 220?",o:["89","94","99","104"],a:2,v:3},
+        {s:"MATHEMATICS",q:"A cyclist travels 504 km in 7 hours. What is his speed?",o:["68 km/hr","70 km/hr","72 km/hr","74 km/hr"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Simplify: 84 - 36 ÷ 4 + 5",o:["80","84","89","94"],a:0,v:3},
+        {s:"MATHEMATICS",q:"The product of 245 and 9 is:",o:["2,195","2,205","2,215","2,225"],a:1,v:3},
+        {s:"MATHEMATICS",q:"If a = 14 and b = 8, find the value of 4a - 3b.",o:["30","32","34","36"],a:1,v:3},
+        {s:"MATHEMATICS",q:"Study the pictograph showing books read. How many books did Rahul read?",o:["5","8","10","12"],a:2,v:3,d:"picto"},
+        {s:"MATHEMATICS",q:"Convert 8 meters 65 cm into centimeters.",o:["86.5 cm","865 cm","8,065 cm","8.65 cm"],a:1,v:3},
+        {s:"MATHEMATICS",q:"Which number is divisible by both 7 and 9?",o:["54","63","72","81"],a:1,v:3},
+        {s:"MATHEMATICS",q:"Add: 8/15 + 11/15",o:["19/15","1 4/15","Both A and B","19/30"],a:2,v:3},
+        {s:"MATHEMATICS",q:"The average of 25, 30, 35, 40, and 45 is:",o:["30","33","35","37"],a:2,v:3},
+        {s:"MATHEMATICS",q:"A chocolate bar costs 28. How much will 17 bars cost?",o:["466","476","486","496"],a:1,v:3},
+        {s:"MATHEMATICS",q:"What is the place value of 7 in 875,432?",o:["7","70","700","70,000"],a:3,v:3},
+        {s:"MATHEMATICS",q:"The area of a rectangle is 360 sq cm. If breadth is 15 cm, what is its length?",o:["22 cm","24 cm","26 cm","28 cm"],a:1,v:3},
+        {s:"MATHEMATICS",q:"Look at the number machine. If Input is 5, what is the output?",o:["20","9:45","22","23"],a:2,v:3,d:"machine"},
+        {s:"MATHEMATICS",q:"Arrange in descending order: 4.44, 4.04, 4.4, 4.004",o:["4.44, 4.4, 4.04, 4.004","4.004, 4.04, 4.4, 4.44","4.4, 4.44, 4.04, 4.004","4.44, 4.04, 4.4, 4.004"],a:0,v:3},
+        {s:"MATHEMATICS",q:"The Roman numeral for 588 is:",o:["DLXXXVIII","DLXXVIII","DXCVIII","DXLVIII"],a:0,v:3},
+        {s:"MATHEMATICS",q:"Find the missing number: 3, 7, 15, 31, 63, __",o:["125","127","129","131"],a:1,v:3},
+        {s:"MATHEMATICS",q:"The cost of 1 kg sugar is 48. What is the cost of 6.5 kg?",o:["302","312","322","332"],a:1,v:3},
+        {s:"MATHEMATICS",q:"How many edges does a square pyramid have?",o:["5","6","7","8"],a:3,v:3},
+        {s:"MATHEMATICS",q:"If 9q = 108, then q = ?",o:["10","11","12","13"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Convert 4 days 8 hours into hours.",o:["96 hours","100 hours","104 hours","108 hours"],a:2,v:3},
+        {s:"MATHEMATICS",q:"The predecessor of 1,00,000 is:",o:["99,999","1,00,001","99,998","99,990"],a:0,v:3},
+        {s:"MATHEMATICS",q:"Multiply: 1.4 × 0.6",o:["0.84","8.4","0.084","84"],a:0,v:3},
+        {s:"MATHEMATICS",q:"If 9 pens cost 315, what is the cost of 14 pens?",o:["480","490","500","510"],a:1,v:3},
+        {s:"MATHEMATICS",q:"What is the sum of first six natural numbers?",o:["18","21","24","27"],a:1,v:3},
+        {s:"MATHEMATICS",q:"What is 4/5 of 85?",o:["64","68","72","76"],a:1,v:3},
+        {s:"MATHEMATICS",q:"36 pencils cost 252. What is the cost of one?",o:["6","7","8","9"],a:1,v:3},
+        {s:"MATHEMATICS",q:"Three angles of a quadrilateral are 80, 100, 90. Fourth angle?",o:["80","85","90","95"],a:2,v:3},
+        {s:"MATHEMATICS",q:"If 18 chocolates cost 540, what is the cost of 11?",o:["310","320","330","340"],a:2,v:3},
+        {s:"MATHEMATICS",q:"What is the square root of 169?",o:["11","12","13","14"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Perimeter of regular pentagon with side 9 cm is:",o:["36 cm","40 cm","45 cm","50 cm"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Divide 21.6 by 3.6",o:["4","5","6","7"],a:2,v:3},
+        {s:"MATHEMATICS",q:"A worker earns 385/day. How much will he earn in 12 days?",o:["4,520","4,620","4,720","4,820"],a:1,v:3},
+        {s:"MATHEMATICS",q:"Find the value: 90 - (4 x 5)",o:["10","72","82","88"],a:2,v:3},
+        {s:"MATHEMATICS",q:"How many grams are there in 9.7 kilograms?",o:["97 g","970 g","9,700 g","97,000 g"],a:2,v:3},
+        {s:"MATHEMATICS",q:"The smallest 3-digit composite number is:",o:["100","101","102","103"],a:0,v:3},
+        {s:"MATHEMATICS",q:"If p=24 and q=6, find p ÷ q + 12",o:["14","15","16","17"],a:2,v:3},
+        {s:"MATHEMATICS",q:"Wire 144 cm long bent into a square. Side length?",o:["32 cm","34 cm","36 cm","38 cm"],a:2,v:3},
+
+        /* REASONING 51-75 (2 Marks each) */
+        {s:"INTELLIGENCE",q:"Find the odd one out: 12, 18, 24, 29, 36",o:["12","18","29","36"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Complete the series: 4, 12, 36, 108, __",o:["216","288","324","432"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"If TIGER is coded as VJIGT, how is ZEBRA coded?",o:["BGDTC","BGCTB","BFCTC","BGDSC"],a:0,v:2},
+        {s:"INTELLIGENCE",q:"Folding pattern: If folded along vertical line, dots visible from front?",o:["0 dots","1 dot","2 dots","4 dots"],a:2,v:2,d:"folding"},
+        {s:"INTELLIGENCE",q:"Next: 512, 256, 128, 64, __",o:["24","28","32","36"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Missing letter: E, H, K, N, __",o:["P","Q","R","S"],a:1,v:2},
+        {s:"INTELLIGENCE",q:"Walk 12km E, 5km N, 12km W. Distance from start?",o:["3 km","5 km","7 km","12 km"],a:1,v:2},
+        {s:"INTELLIGENCE",q:"M is N daughter. O is M mother. P is O son. P to N?",o:["Father","Brother-in-law","Uncle","Son"],a:3,v:2},
+        {s:"INTELLIGENCE",q:"Complete matrix: △ ○ □ | ○ □ △ | □ △ ?",o:["△","○","□","Pentagon"],a:1,v:2,d:"matrix"},
+        {s:"INTELLIGENCE",q:"Odd one: Whale, Shark, Dolphin, Crocodile",o:["Whale","Shark","Dolphin","Crocodile"],a:3,v:2},
+        {s:"INTELLIGENCE",q:"ORANGE is RUDQJH, PURPLE is?",o:["SXUSOH","SXUSOI","SXUQOH","TXUSOH"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Not belong: Rice, Wheat, Barley, Spinach?",o:["Rice","Wheat","Barley","Spinach"],a:3,v:2},
+        {s:"INTELLIGENCE",q:"Count rectangles in 3x3 grid.",o:["18","21","24","27"],a:1,v:2,d:"grid"},
+        {s:"INTELLIGENCE",q:"If 9x8=17, 7x6=13, then 5x4=?",o:["7","8","9","10"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Complete: 5A, 10C, 15E, 20G, __",o:["25H","25I","24I","26I"],a:1,v:2},
+        {s:"INTELLIGENCE",q:"If A > B, B = C, and C < D, which is true?",o:["A = D","A > C","D < A","B > D"],a:1,v:2},
+        {s:"INTELLIGENCE",q:"8 AM (West), 12 PM (North), 4 PM (?)",o:["East","West","North","South"],a:0,v:2,d:"shadow"},
+        {s:"INTELLIGENCE",q:"Next: 5, 8, 14, 26, 50, __",o:["90","94","98","102"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"If LION = 52, TIGER = 56, then BEAR = ?",o:["36","38","40","42"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Different: 216, 343, 512, 625, 729",o:["216","343","625","729"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Amit 7th start, 11th end. Total people?",o:["16","17","18","19"],a:1,v:2},
+        {s:"INTELLIGENCE",q:"RIVER is UFWHU, OCEAN is?",o:["RFHDO","RFIEP","RFHDQ","RGHDQ"],a:0,v:2},
+        {s:"INTELLIGENCE",q:"Odd pair: 9-81, 11-121, 13-169, 15-200",o:["9-81","11-121","13-169","15-200"],a:3,v:2},
+        {s:"INTELLIGENCE",q:"Next letter: C, F, J, O, __?",o:["S","T","U","V"],a:2,v:2},
+        {s:"INTELLIGENCE",q:"Yesterday Sunday. Day after tomorrow?",o:["Tuesday","Wednesday","Thursday","Friday"],a:2,v:2},
+
+        /* LANGUAGE 76-100 (2 Marks each) */
+        {s:"LANGUAGE",q:"Correct spelling:",o:["Wierd","Weird","Weerd","Weired"],a:1,v:2},
+        {s:"LANGUAGE",q:"Plural of phenomenon?",o:["Phenomenons","Phenomena","Phenomenas","Phenomenes"],a:1,v:2},
+        {s:"LANGUAGE",q:"Antonym: beautiful",o:["Pretty","Ugly","Lovely","Gorgeous"],a:1,v:2},
+        {s:"LANGUAGE",q:"He ____ swimming every Sunday.",o:["go","goes","going","gone"],a:1,v:2},
+        {s:"LANGUAGE",q:"Pronoun: 'It is raining heavily.'",o:["It","is","raining","heavily"],a:0,v:2},
+        {s:"LANGUAGE",q:"Synonym: rapid",o:["Slow","Fast","Steady","Gradual"],a:1,v:2},
+        {s:"LANGUAGE",q:"Article: '___ honest person'",o:["A","An","The","None"],a:1,v:2},
+        {s:"LANGUAGE",q:"Past tense: bring",o:["Bringed","Brought","Brung","Bringing"],a:1,v:2},
+        {s:"LANGUAGE",q:"Noun: 'Kindness is a virtue.'",o:["Kindness","is","a","virtue"],a:0,v:2},
+        {s:"LANGUAGE",q:"Correct: dog barks",o:["dog bark","dog barks","dog barking","dog is bark"],a:1,v:2},
+        {s:"LANGUAGE",q:"Meaning: enormous",o:["Small","Large","Medium","Average"],a:1,v:2},
+        {s:"LANGUAGE",q:"Preposition: 'angry ___ him.'",o:["on","at","with","for"],a:2,v:2},
+        {s:"LANGUAGE",q:"Punctuation: How are you?",o:["How are you","How are you.","How are you?","How are you!"],a:2,v:2},
+        {s:"LANGUAGE",q:"Type: 'Help the poor.'",o:["Declarative","Interrogative","Imperative","Exclamatory"],a:2,v:2},
+        {s:"LANGUAGE",q:"Adjective: 'sings beautifully'?",o:["She","sings","beautifully","None"],a:3,v:2},
+        {s:"LANGUAGE",q:"Opposite: victory",o:["Success","Win","Defeat","Triumph"],a:2,v:2},
+        {s:"LANGUAGE",q:"'This is ___ best day.'",o:["a","an","the","None"],a:2,v:2},
+        {s:"LANGUAGE",q:"Comparative: good",o:["Gooder","Better","Best","More good"],a:1,v:2},
+        {s:"LANGUAGE",q:"Verb: 'stars shine brightly.'",o:["stars","shine","brightly","The"],a:1,v:2},
+        {s:"LANGUAGE",q:"Correct spelling: occurred",o:["Occured","Occurred","Ocurred","Occurrd"],a:1,v:2},
+        {s:"LANGUAGE",q:"Male of nun?",o:["Priest","Monk","Father","Brother"],a:1,v:2},
+        {s:"LANGUAGE",q:"Conjunction: 'tall ___ strong.'",o:["and","but","or","so"],a:0,v:2},
+        {s:"LANGUAGE",q:"Synonym: happy",o:["Sad","Joyful","Angry","Tired"],a:1,v:2},
+        {s:"LANGUAGE",q:"Plural: radii",o:["Radiuses","Radii","Both","Radiuss"],a:2,v:2},
+        {s:"LANGUAGE",q:"Identify adverb: speaks softly",o:["He","speaks","softly","None"],a:2,v:2},
+
+        /* GK 101-125 (2 Marks each) */
+        {s:"GENERAL KNOWLEDGE",q:"Invented aeroplane?",o:["Wright Brothers","Edison","Ford","Watt"],a:0,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Capital of Assam?",o:["Guwahati","Dispur","Shillong","Imphal"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"White color in flag represents?",o:["Courage","Peace and truth","Fertility","Sacrifice"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Planet with rings?",o:["Mars","Jupiter","Saturn","Neptune"],a:2,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Wrote 'Jungle Book'?",o:["Narayan","Kipling","Dahl","Carroll"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"'Land of Five Rivers'?",o:["Haryana","Punjab","Rajasthan","UP"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"National game of China?",o:["Football","Table Tennis","Badminton","Cricket"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Saltiest sea?",o:["Red Sea","Black Sea","Dead Sea","Arabian Sea"],a:2,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Full form WWW?",o:["World Wide Web","Weather Watch","Western Web","Wide Web"],a:0,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"'Pearl City' of India?",o:["Mumbai","Hyderabad","Vizag","Chennai"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Bard of Avon?",o:["Wordsworth","Shakespeare","Keats","Byron"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Indigenous aircraft carrier?",o:["INS Vikrant","INS Vikramaditya","INS Arihant","INS Chakra"],a:0,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Year India won first WC?",o:["1975","1983","1987","1992"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"River 'Dakshin Ganga'?",o:["Krishna","Godavari","Kaveri","Narmada"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Capital of Canada?",o:["Toronto","Vancouver","Ottawa","Montreal"],a:2,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Discovered radium?",o:["Marie Curie","Einstein","Newton","Galileo"],a:0,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Organ controls smell?",o:["Eyes","Nose","Tongue","Ears"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Ribs in human body?",o:["20","22","24","26"],a:2,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Symbol for Gold?",o:["Go","Gd","Au","Ag"],a:2,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Coldest planet?",o:["Neptune","Uranus","Pluto","Saturn"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Bangladesh anthem author?",o:["Nazrul Islam","Tagore","Rahman","Das"],a:1,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Environment Day?",o:["5th June","5th July","22nd April","16th Sept"],a:0,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"What is dry ice?",o:["Solid oxygen","Solid nitrogen","Solid CO2","Solid hydrogen"],a:2,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"First Indian woman in space?",o:["Kalpana Chawla","Sunita Williams","Indira Gandhi","Pratibha Patil"],a:0,v:2},
+        {s:"GENERAL KNOWLEDGE",q:"Strings on violin?",o:["4","5","6","7"],a:0,v:2}
+    ];
+
+    /* CORE ENGINE ENGINE */
+    let idx = 0, score = 0, timerVal = 150 * 60, tInt = null;
+    let st = { "MATHEMATICS": {c:0, m:0}, "INTELLIGENCE": {c:0, m:0}, "LANGUAGE": {c:0, m:0}, "GENERAL KNOWLEDGE": {c:0, m:0} };
+
+    window.initializeTest = function() {
+        render();
+        tInt = setInterval(() => {
+            timerVal--;
+            let m = Math.floor(timerVal/60), s = timerVal%60;
+            document.getElementById('timer-box').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+            if(timerVal <= 0) finalize();
+        }, 1000);
+    };
+
+    function render() {
+        const q = EXAM_QUESTIONS[idx];
+        document.getElementById('q-sec-name').innerText = q.s;
+        document.getElementById('q-count-text').innerText = `Question ${idx + 1} / 125`;
+        document.getElementById('q-text-area').innerText = q.q;
+        const d = document.getElementById('q-diag-area');
+        d.innerHTML = "";
+        
+        if(q.d) {
+            d.className = "diagram-container";
+            if(q.d === "wall") d.innerHTML = `<svg width="240" height="120" viewBox="0 0 240 120"><rect x="10" y="10" width="220" height="20" fill="#ddd" stroke="#000"/><rect x="10" y="35" width="110" height="20" fill="#bbb" stroke="#000"/><rect x="120" y="35" width="110" height="20" fill="#bbb" stroke="#000"/><rect x="10" y="60" width="55" height="20" fill="#999" stroke="#000"/><rect x="65" y="60" width="55" height="20" fill="#999" stroke="#000"/><rect x="120" y="60" width="55" height="20" fill="#999" stroke="#000"/><rect x="175" y="60" width="55" height="20" fill="#999" stroke="#000"/><text x="120" y="100" text-anchor="middle" font-size="12">1 | 1/2 | 1/4 | 1/8 rows</text></svg>`;
+            else if(q.d === "picto") d.innerHTML = `<table style="border-collapse:collapse; width:100%; text-align:left;"><tr><th style="border:1px solid #000; padding:5px;">Student</th><th style="border:1px solid #000; padding:5px;">Books Read</th></tr><tr><td style="border:1px solid #000; padding:5px;">Amit</td><td style="border:1px solid #000; padding:5px;">📖📖📖</td></tr><tr><td style="border:1px solid #000; padding:5px;">Rahul</td><td style="border:1px solid #000; padding:5px;">📖📖📖📖📖</td></tr><tr><td colspan="2" style="padding-top:10px; font-size:12px;">Key: 📖 = 2 Books</td></tr></table>`;
+            else if(q.d === "machine") d.innerHTML = `<div style="border:2px solid #1a237e; padding:20px; border-radius:15px; font-weight:bold; color:#1a237e;">Input (5) → [×3] → [+7] → Output (?)</div>`;
+            else if(q.d === "folding") d.innerHTML = `<svg width="150" height="100"><rect x="10" y="10" width="80" height="80" fill="none" stroke="#000" stroke-dasharray="5"/><line x1="50" y1="10" x2="50" y2="90" stroke="red" stroke-width="2"/><circle cx="30" cy="30" r="4" fill="black"/><circle cx="30" cy="70" r="4" fill="black"/><circle cx="70" cy="30" r="4" fill="black"/><circle cx="70" cy="70" r="4" fill="black"/></svg>`;
+            else if(q.d === "matrix") d.innerHTML = `<div style="font-size:1.8rem; letter-spacing:15px;">△ ○ □<br>○ □ △<br>□ △ ?</div>`;
+            else if(q.d === "grid") d.innerHTML = `<svg width="120" height="120" viewBox="0 0 100 100"><rect x="5" y="5" width="90" height="90" fill="none" stroke="#000" stroke-width="1.5"/><line x1="5" y1="35" x2="95" y2="35" stroke="#000"/><line x1="5" y1="65" x2="95" y2="65" stroke="#000"/><line x1="35" y1="5" x2="35" y2="95" stroke="#000"/><line x1="65" y1="5" x2="65" y2="95" stroke="#000"/></svg>`;
+            else if(q.d === "shadow") d.innerHTML = `<div style="text-align:left; font-size:1.2rem; background:#fff; padding:15px; border-radius:10px; border-left:5px solid #ff6f00;">8 AM: Shadow West<br>12 PM: Shadow North<br>4 PM: ?</div>`;
+        } else { d.className = ""; }
+
+        const optA = document.getElementById('q-opt-area');
+        optA.innerHTML = "";
+        q.o.forEach((o, i) => {
+            const b = document.createElement('div');
+            b.className = 'option';
+            b.innerText = `${String.fromCharCode(65+i)}. ${o}`;
+            b.onclick = () => {
+                if(i === q.a) { score += q.v; st[q.s].c++; st[q.s].m += q.v; }
+                idx++;
+                if(idx < EXAM_QUESTIONS.length) render(); else finalize();
+            };
+            optA.appendChild(b);
+        });
+    }
+
+    function finalize() {
+        clearInterval(tInt);
+localStorage.setItem(TEST_LOCK_KEY, 'DONE');
+        document.getElementById('scr-exam').style.display = 'none';
+        document.getElementById('scr-result').style.display = 'flex';
+        let tc = 0; for(let s in st) tc += st[s].c;
+        document.getElementById('res-correct').innerText = tc;
+        document.getElementById('res-marks').innerText = score;
+        const tb = document.getElementById('res-tbody');
+        tb.innerHTML = "";
+        ["MATHEMATICS", "INTELLIGENCE", "LANGUAGE", "GENERAL KNOWLEDGE"].forEach(s => {
+            let r = tb.insertRow();
+            r.insertCell(0).innerText = s;
+            r.insertCell(1).innerText = st[s].c;
+            r.insertCell(2).innerText = st[s].m;
+        });
+    }
+if (localStorage.getItem(TEST_LOCK_KEY)) {
+    document.getElementById('scr-welcome').style.display = 'none';
+    document.getElementById('scr-instr').style.display = 'none';
+    document.getElementById('scr-exam').style.display = 'none';
+    document.getElementById('scr-result').style.display = 'none';
+
+    alert("This test has already been completed.");
+}
+</script>
+</body>
+</html>
