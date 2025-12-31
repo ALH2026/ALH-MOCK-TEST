@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>AISSEE Mock Test 6 - Abhimanyu Learning Hub</title> <style> :root { --primary: #1a73e8; --secondary: #d93025; --bg: #f8f9fa; --text: #202124; } body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; user-select: none; -webkit-user-select: none; overflow-x: hidden; } #app { max-width: 850px; margin: 30px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 500px; z-index: 10; } .screen { display: none; text-align: center; animation: fadeIn 0.5s; } .active { display: block; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } h1 { color: var(--secondary); font-size: 2.8rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; } .subtitle { font-weight: 600; color: #5f6368; margin-bottom: 40px; font-size: 1.2rem; } .btn { background: var(--primary); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-weight: 600; box-shadow: 0 4px 6px rgba(26,115,232,0.2); } .btn:hover { background: #1557b0; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(26,115,232,0.3); } .instruction-box { text-align: left; background: #f1f3f4; padding: 25px; border-radius: 8px; margin-bottom: 30px; border-left: 5px solid var(--primary); } .instruction-box h2 { margin-top: 0; color: #3c4043; } .instruction-list { line-height: 1.8; font-size: 1.05rem; } #timer-bar { position: sticky; top: 0; background: #3c4043; color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 1.1rem; border-radius: 8px 8px 0 0; display: none; } .q-meta { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px; font-weight: 700; color: var(--primary); } .q-text { font-size: 1.3rem; text-align: left; margin-bottom: 25px; line-height: 1.5; } .options-grid { display: grid; gap: 15px; } .option-card { border: 2px solid #dadce0; padding: 18px; border-radius: 10px; cursor: pointer; text-align: left; transition: all 0.2s; font-size: 1.1rem; display: flex; align-items: center; } .option-card:hover { border-color: var(--primary); background: #e8f0fe; } .option-prefix { font-weight: bold; margin-right: 15px; color: var(--primary); background: #f1f3f4; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; } .diagram-container { margin: 25px 0; background: #fff; border: 1px dashed #ccc; padding: 15px; display: inline-block; } .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); font-size: 3.5rem; color: rgba(0,0,0,0.04); pointer-events: none; z-index: 1; white-space: nowrap; font-weight: 900; width: 150%; text-align: center; } .result-table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 1.1rem; } .result-table td, .result-table th { border: 1px solid #dee2e6; padding: 15px; text-align: center; } .result-table th { background: var(--primary); color: white; } .summary-box { display: flex; justify-content: space-around; margin-bottom: 30px; } .stat-card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; min-width: 150px; } .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); } .stat-lbl { font-size: 0.9rem; color: #70757a; text-transform: uppercase; } </style> </head> <body oncontextmenu="return false;"> <div class="watermark">© Abhimanyu Learning Hub (ALH) | Unauthorized Copying Prohibited</div>
+
+<div id="app">
+    <div id="timer-bar">Time Remaining: 02:30:00</div>
+
+    <div id="screen-welcome" class="screen active">
+        <h1>ABHIMANYU LEARNING HUB</h1>
+        <p class="subtitle">PREPARE YOU FOR THE BEST RESULT</p>
+        <button class="btn" onclick="navigateTo('screen-instructions')">NEXT</button>
+    </div>
+
+    <div id="screen-instructions" class="screen">
+        <div class="instruction-box">
+            <h2>INSTRUCTIONS:</h2>
+            <div class="instruction-list">
+                1. This question paper contains 125 questions of 300 Marks divided into four sections. <br>
+                2. Each Section carries equal marks. <br>
+                &nbsp;&nbsp;&nbsp;<b>Mathematics</b> – 50 Questions – 3 Marks each – Total 150 Marks<br>
+                &nbsp;&nbsp;&nbsp;<b>Intelligence (Reasoning)</b> – 25 Questions – 2 Marks each – Total 50 Marks<br>
+                &nbsp;&nbsp;&nbsp;<b>Language (English)</b> – 25 Questions – 2 Marks each – Total 50 Marks<br>
+                &nbsp;&nbsp;&nbsp;<b>General Knowledge</b> – 25 Questions – 2 Marks each – Total 50 Marks<br>
+                3. There is no negative marking.<br>
+                4. Use of calculator is not permitted.<br>
+                5. All questions are compulsory.<br>
+                6. You can only attempt this exam once.
+            </div>
+        </div>
+        <button class="btn" onclick="startExam()">START EXAM</button>
+    </div>
+
+    <div id="screen-exam" class="screen">
+        <div class="q-meta">
+            <span id="display-section">SECTION</span>
+            <span id="display-counter">Question 1 / 125</span>
+        </div>
+        <div id="question-payload">
+            <div class="q-text" id="q-body"></div>
+            <div id="q-visual"></div>
+            <div class="options-grid" id="q-options"></div>
+        </div>
+    </div>
+
+    <div id="screen-result" class="screen">
+        <h2 style="font-size: 2rem; color: #202124;">Assessment Complete</h2>
+        <div class="summary-box">
+            <div class="stat-card">
+                <div class="stat-val" id="res-total-correct">0</div>
+                <div class="stat-lbl">Correct Answers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="res-total-marks">0</div>
+                <div class="stat-lbl">Total Score</div>
+            </div>
+        </div>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Subject Section</th>
+                    <th>Correct Items</th>
+                    <th>Marks Obtained</th>
+                </tr>
+            </thead>
+            <tbody id="res-breakdown"></tbody>
+        </table>
+        <div style="margin-top: 40px; padding: 20px; background: #fce8e6; color: #d93025; border-radius: 8px; font-weight: bold; border: 1px solid #fad2cf;">
+            This test cannot be attempted again.
+        </div>
+    </div>
+
+    <div id="screen-lock" class="screen">
+        <div style="padding: 50px;">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="#d93025"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            <h2 style="color:#d93025; margin-top: 20px;">Attempt Limit Reached</h2>
+            <p style="font-size: 1.2rem; color: #5f6368;">You have already attempted this test. Re-attempt is not allowed.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+const TEST_LOCK_KEY = "ALH_TEST_6_LOCK";
+
+let currentQ = 0;
+let userAnswers = [];
+let score = 0;
+let timer;
+let timeLeft = 150 * 60;
+
+let correctCount = [0,0,0,0];
+let scoreMap = [0,0,0,0];
+    /* OBFUSCATED DATA ENGINE */
+    const _0xData = {
+        secs: ["MATHEMATICS", "REASONING", "ENGLISH", "GENERAL KNOWLEDGE"],
+        pool: [
+            /* MATH 1-50 (3 Marks) */
+            {q: "A library has 2,847 books. If 1,359 books are issued to students, how many books remain in the library?", o: ["1,488","1,498","1,588","1,388"], a: 0, s: 0},
+            {q: "Find the product: 287 × 9", o: ["2,583","2,593","2,683","2,483"], a: 0, s: 0},
+            {q: "What is the HCF of 18 and 27?", o: ["3","6","9","18"], a: 2, s: 0},
+            {q: "Simplify: 5/8 - 3/8", o: ["2/8","1/4","Both A and B","8/8"], a: 2, s: 0},
+            {q: "A square garden has each side measuring 14 m. What is its perimeter?", o: ["28 m","56 m","196 m","42 m"], a: 1, s: 0},
+            {q: "Convert 2.4 into a fraction in simplest form.", o: ["24/10","12/5","6/5","2/5"], a: 1, s: 0},
+            {q: "What is the LCM of 8 and 12?", o: ["24","48","96","36"], a: 0, s: 0},
+            {q: "Divide: 3,696 ÷ 7 = ?", o: ["528","538","518","548"], a: 0, s: 0},
+            {q: "A bag contains 72 chocolates. If 2/3 of them are distributed, how many chocolates are left?", o: ["48","36","24","18"], a: 2, s: 0},
+            {q: "The product of two numbers is 144. If one number is 16, find the other number.", o: ["8","9","12","6"], a: 1, s: 0},
+            {q: "Observe the figure: AB = 16 cm, Height EC = 8 cm. What is the area of triangle AEB?", o: ["64 sq cm","128 sq cm","32 sq cm","96 sq cm"], a: 0, s: 0, d: `<svg width="200" height="120"><path d="M20 100 L180 100 L100 20 Z" fill="none" stroke="black"/><line x1="100" y1="20" x2="100" y2="100" stroke="black" stroke-dasharray="4"/><text x="15" y="110">A</text><text x="185" y="110">B</text><text x="95" y="15">E</text><text x="105" y="110">C</text><text x="80" y="115">16 cm</text><text x="105" y="65">8 cm</text></svg>`},
+            {q: "Round off 7,849 to the nearest thousand.", o: ["7,000","7,800","8,000","7,900"], a: 2, s: 0},
+            {q: "What is 25% of 160?", o: ["40","35","45","50"], a: 0, s: 0},
+            {q: "A cyclist covers 135 km in 3 hours. What is his speed?", o: ["40 km/hr","45 km/hr","50 km/hr","55 km/hr"], a: 1, s: 0},
+            {q: "Simplify: 72 ÷ 8 - 5 × 2", o: ["-1","0","1","-2"], a: 0, s: 0},
+            {q: "The product of 250 and 4 is:", o: ["900","1,000","1,100","950"], a: 1, s: 0},
+            {q: "If p=7 and q=4, find the value of 3p - 2q", o: ["13","14","15","12"], a: 0, s: 0},
+            {q: "Study the rectangle PQRS: Width = 9 cm, Length = 15 cm. What is the area?", o: ["135 sq cm","48 sq cm","24 sq cm","125 sq cm"], a: 0, s: 0, d: `<svg width="180" height="100"><rect x="10" y="10" width="150" height="80" fill="none" stroke="black"/><text x="5" y="15">P</text><text x="165" y="15">Q</text><text x="165" y="105">R</text><text x="5" y="105">S</text><text x="75" y="105">15 cm</text><text x="165" y="55">9 cm</text></svg>`},
+            {q: "Convert 4 kg 750 g into grams.", o: ["4,750 g","475 g","47,500 g","4,075 g"], a: 0, s: 0},
+            {q: "Which of the following is a composite number?", o: ["29","31","33","37"], a: 2, s: 0},
+            {q: "Add: 5/12 + 7/12", o: ["12/12","1","Both A and B","12/24"], a: 2, s: 0},
+            {q: "The average of 15, 20, 25, and 32 is:", o: ["22","23","24","21"], a: 1, s: 0},
+            {q: "A pencil costs 8. How much will 15 pencils cost?", o: ["110","115","120","125"], a: 2, s: 0},
+            {q: "What is the place value of 5 in 65,432?", o: ["5","50","500","5,000"], a: 3, s: 0},
+            {q: "If the area of a square is 81 sq cm, what is the length of each side?", o: ["9 cm","18 cm","27 cm","40.5 cm"], a: 0, s: 0},
+            {q: "Look at the clock: Hour hand between 7 and 8, minute hand at 3. What time is it?", o: ["7:15","3:35","7:30","8:15"], a: 0, s: 0, d: `<svg width="100" height="100"><circle cx="50" cy="50" r="45" fill="none" stroke="black"/><line x1="50" y1="50" x2="65" y2="70" stroke="black" stroke-width="3"/><line x1="50" y1="50" x2="85" y2="50" stroke="black" stroke-width="2"/><text x="45" y="15">12</text><text x="85" y="55">3</text><text x="48" y="95">6</text></svg>`},
+            {q: "Arrange in descending order: 0.9, 0.09, 0.99, 0.009", o: ["0.99, 0.9, 0.09, 0.009","0.009, 0.09, 0.9, 0.99","0.9, 0.99, 0.09, 0.009","0.99, 0.09, 0.9, 0.009"], a: 0, s: 0},
+            {q: "The Roman numeral for 149 is:", o: ["CXLIX","CXXXXIX","CXLIV","CIL"], a: 0, s: 0},
+            {q: "Find the missing number: 2, 6, 18, 54, ?", o: ["108","162","216","128"], a: 1, s: 0},
+            {q: "The cost of 1 meter of cloth is 85. What will be the cost of 4.5 meters?", o: ["382.50","372.50","392.50","385.50"], a: 0, s: 0},
+            {q: "How many diagonals does a pentagon have?", o: ["3","4","5","6"], a: 2, s: 0},
+            {q: "If 5y = 45, then y = ?", o: ["7","8","9","10"], a: 2, s: 0},
+            {q: "Convert 2 days 6 hours into hours.", o: ["48 hours","52 hours","54 hours","50 hours"], a: 2, s: 0},
+            {q: "The predecessor of the smallest 5-digit number is:", o: ["9,999","10,000","10,001","9,998"], a: 0, s: 0},
+            {q: "Multiply: 0.8 × 0.7", o: ["0.56","5.6","0.056","56"], a: 0, s: 0},
+            {q: "If 6 pens cost 72, what is the cost of 11 pens?", o: ["120","132","144","110"], a: 1, s: 0},
+            {q: "The sum of the smallest 2-digit and largest 2-digit number is:", o: ["109","110","108","199"], a: 0, s: 0},
+            {q: "What is 3/5 of 100?", o: ["50","60","70","40"], a: 1, s: 0},
+            {q: "20 oranges cost 140. What is the cost of one orange?", o: ["7","6","8","5"], a: 0, s: 0},
+            {q: "The sum of angles in a quadrilateral is:", o: ["180°","270°","360°","450°"], a: 2, s: 0},
+            {q: "If 12 books cost 480, what is the cost of 7 books?", o: ["280","290","300","270"], a: 0, s: 0},
+            {q: "What is the square root of 144?", o: ["11","12","13","14"], a: 1, s: 0},
+            {q: "The area of a square with side 11 cm is:", o: ["121 sq cm","44 sq cm","22 sq cm","110 sq cm"], a: 0, s: 0},
+            {q: "Divide 8.4 by 1.2", o: ["7","6","8","9"], a: 0, s: 0},
+            {q: "A shopkeeper sells 25 items per day. How many will he sell in 18 days?", o: ["400","450","500","425"], a: 1, s: 0},
+            {q: "Find the value: (36-16) × 3", o: ["60","54","48","66"], a: 0, s: 0},
+            {q: "How many centimeters are there in 3.8 meters?", o: ["38 cm","380 cm","3,800 cm","0.38 cm"], a: 1, s: 0},
+            {q: "The largest odd number less than 50 is:", o: ["49","47","51","48"], a: 0, s: 0},
+            {q: "If m=10 and n=6, find: m² - n²", o: ["64","54","74","44"], a: 0, s: 0},
+            {q: "A box has 8 white, 6 black, and 5 yellow buttons. What is the total?", o: ["18","19","20","21"], a: 1, s: 0},
+
+            /* REASONING 51-75 (2 Marks) */
+            {q: "Find the odd one out: 5, 10, 15, 22, 25", o: ["5","10","22","25"], a: 2, s: 1},
+            {q: "Complete the series: 7, 14, 28, 56, ?", o: ["84","112","96","70"], a: 1, s: 1},
+            {q: "If TRAIN is coded as USBJO, how is PLANE coded?", o: ["QMBOF","QMABF","PMBOF","QNBOF"], a: 0, s: 1},
+            {q: "How many rectangles are there in a 3-block stack figure?", o: ["6","9","8","7"], a: 1, s: 1, d: `<svg width="100" height="150"><rect x="10" y="10" width="80" height="40" fill="none" stroke="black"/><rect x="10" y="50" width="80" height="40" fill="none" stroke="black"/><rect x="10" y="90" width="80" height="40" fill="none" stroke="black"/></svg>`},
+            {q: "Which number comes next: 81, 72, 63, 54, ?", o: ["45","44","46","48"], a: 0, s: 1},
+            {q: "Find the missing letter: B, E, I, N, ?", o: ["S","T","R","U"], a: 1, s: 1},
+            {q: "If you face East and turn 90° clockwise, which direction are you facing?", o: ["West","North","South","East"], a: 2, s: 1},
+            {q: "Amit said, 'She is the daughter of my mother's only daughter.' Relation?", o: ["Sister","Daughter","Niece","Cousin"], a: 2, s: 1},
+            {q: "Complete pattern: [A] [•] | [▲] [•] | [▲] [?]", o: [".","■","▲","○"], a: 1, s: 1},
+            {q: "Find the odd one: Dog, Cat, Cow, Table", o: ["Dog","Cat","Cow","Table"], a: 3, s: 1},
+            {q: "If SCHOOL is coded as UEJQQN, what will TEACHER be?", o: ["VGCEJGT","VGCEJGU","VGCFJGT","VGCEJHT"], a: 0, s: 1},
+            {q: "Which word does NOT belong: January, March, Monday, July?", o: ["January","March","Monday","July"], a: 2, s: 1},
+            {q: "Count circles: Row 1: 1, Row 2: 2, Row 3: 3, Row 4: 4.", o: ["10","9","11","8"], a: 0, s: 1},
+            {q: "If 3+4=25, 5+6=61, then 7+2 = ?", o: ["45","63","53","81"], a: 2, s: 1},
+            {q: "Complete: ZXV, TRP, NLJ, ?", o: ["HFD","GEC","IFD","HGE"], a: 0, s: 1},
+            {q: "P is heavier than Q. R is lighter than Q. Who is the heaviest?", o: ["P","Q","R","Cannot be determined"], a: 0, s: 1},
+            {q: "Water image of MASTER will be:", o: ["RITZAM","Upside-down MASTER","MASTER","Inverted version"], a: 1, s: 1},
+            {q: "Find the next number: 2, 5, 11, 23, 47, ?", o: ["94","95","96","93"], a: 1, s: 1},
+            {q: "If DOG = 27, CAT = 24, then PIG = ?", o: ["33","32","31","34"], a: 1, s: 1},
+            {q: "Which one is different: 23, 29, 31, 35, 37", o: ["23","29","35","37"], a: 2, s: 1},
+            {q: "Rahul is 12th from front and 18th from back. Total in queue?", o: ["29","30","31","28"], a: 0, s: 1},
+            {q: "If HOUSE is coded as IPVTF, how is CHAIR coded?", o: ["DIBJS","DIAJS","DHBJS","DIBIS"], a: 0, s: 1},
+            {q: "Find the odd pair: 2-8, 3-27, 4-64, 5-100", o: ["2-8","3-27","4-64","5-100"], a: 3, s: 1},
+            {q: "What comes next: A, D, H, M, ?", o: ["R","S","T","Q"], a: 1, s: 1},
+            {q: "A clock shows 6:00. Angle between hands?", o: ["0°","90°","180°","360°"], a: 2, s: 1},
+
+            /* ENGLISH 76-100 (2 Marks) */
+            {q: "Choose the correctly spelled word:", o: ["Embarass","Embarrass","Embaras","Embarras"], a: 1, s: 2},
+            {q: "What is the plural of 'tooth'?", o: ["Tooths","Teeth","Toothes","Teeths"], a: 1, s: 2},
+            {q: "Choose the antonym of 'happy':", o: ["Joyful","Cheerful","Sad","Pleased"], a: 2, s: 2},
+            {q: "Fill in: They ____ playing cricket.", o: ["is","am","are","was"], a: 2, s: 2},
+            {q: "Identify the verb: 'The bird sings sweetly.'", o: ["bird","sings","sweetly","The"], a: 1, s: 2},
+            {q: "Choose the synonym of 'happy':", o: ["Sad","Angry","Joyful","Tired"], a: 2, s: 2},
+            {q: "Which article: '____ honest man is respected'?", o: ["A","An","The","No article"], a: 1, s: 2},
+            {q: "What is the past tense of 'eat'?", o: ["Eated","Eaten","Ate","Eating"], a: 2, s: 2},
+            {q: "Identify the adjective: 'He is a smart boy.'", o: ["He","is","smart","boy"], a: 2, s: 2},
+            {q: "Choose the correct sentence:", o: ["She have a cat.","She has a cat.","She having a cat.","She had have a cat."], a: 1, s: 2},
+            {q: "What is the meaning of 'tiny'?", o: ["Very big","Very small","Medium","Heavy"], a: 1, s: 2},
+            {q: "Preposition: 'He is afraid ____ dogs.'", o: ["for","of","with","to"], a: 1, s: 2},
+            {q: "Correct punctuation:", o: ["What is your name","What is your name.","What is your name?","What is your name!"], a: 2, s: 2},
+            {q: "Sentence type: 'How beautiful the flower is!'", o: ["Declarative","Interrogative","Imperative","Exclamatory"], a: 3, s: 2},
+            {q: "Which is a pronoun: 'She reads books daily'?", o: ["She","reads","books","daily"], a: 0, s: 2},
+            {q: "Opposite of 'heavy':", o: ["Big","Light","Huge","Strong"], a: 1, s: 2},
+            {q: "Fill: 'There are ____ students in the class.'", o: ["much","many","more","most"], a: 1, s: 2},
+            {q: "Comparative form of 'tall':", o: ["Tallest","Taller","More tall","Most tall"], a: 1, s: 2},
+            {q: "Identify the adverb: 'She speaks loudly.'", o: ["She","speaks","loudly","None"], a: 2, s: 2},
+            {q: "Choose the correct spelling:", o: ["Seperate","Separate","Separete","Seperete"], a: 1, s: 2},
+            {q: "Superlative of 'small':", o: ["Smaller","Smallest","More small","Most small"], a: 1, s: 2},
+            {q: "Conjunction: 'He is poor ____ honest.'", o: ["and","but","or","so"], a: 1, s: 2},
+            {q: "Synonym of 'intelligent':", o: ["Foolish","Stupid","Smart","Dull"], a: 2, s: 2},
+            {q: "Male gender of 'cow':", o: ["Bull","Ox","Calf","Buffalo"], a: 0, s: 2},
+            {q: "Preposition: 'The book is on the table.'", o: ["book","is","on","table"], a: 2, s: 2},
+
+            /* GK 101-125 (2 Marks) */
+            {q: "Which freedom fighter is known as 'Netaji'?", o: ["Mahatma Gandhi","Subhas Chandra Bose","Bhagat Singh","Lala Lajpat Rai"], a: 1, s: 3},
+            {q: "What is the capital of Maharashtra?", o: ["Pune","Nagpur","Mumbai","Nashik"], a: 2, s: 3},
+            {q: "What symbol is at the center of the Indian National Flag?", o: ["Lotus","Ashoka Chakra","Tiger","Star"], a: 1, s: 3},
+            {q: "Which planet is known as the 'Morning Star'?", o: ["Mercury","Venus","Mars","Jupiter"], a: 1, s: 3},
+            {q: "Who composed the song 'Vande Mataram'?", o: ["Rabindranath Tagore","Bankim Chandra Chatterjee","Sarojini Naidu","Lal Bahadur Shastri"], a: 1, s: 3},
+            {q: "How many Union Territories does India have currently?", o: ["6","7","8","9"], a: 2, s: 3},
+            {q: "What is the national fruit of India?", o: ["Apple","Banana","Mango","Orange"], a: 2, s: 3},
+            {q: "Which is the longest river in the world?", o: ["Nile","Amazon","Ganga","Mississippi"], a: 0, s: 3},
+            {q: "What is the full form of WHO?", o: ["World Health Organization","World Humanitarian Org","World Help Org","World Hygiene Org"], a: 0, s: 3},
+            {q: "Which is the largest state in India by area?", o: ["Maharashtra","Madhya Pradesh","Rajasthan","Uttar Pradesh"], a: 2, s: 3},
+            {q: "Who was the first President of India?", o: ["Dr. Radhakrishnan","Dr. Rajendra Prasad","Dr. Zakir Hussain","V.V. Giri"], a: 1, s: 3},
+            {q: "What is the national tree of India?", o: ["Neem","Peepal","Banyan","Mango"], a: 2, s: 3},
+            {q: "On which date is Independence Day celebrated in India?", o: ["26th Jan","15th Aug","2nd Oct","14th Nov"], a: 1, s: 3},
+            {q: "Which river is known as the 'Sorrow of Bihar'?", o: ["Ganga","Yamuna","Kosi","Brahmaputra"], a: 2, s: 3},
+            {q: "What is the capital of Japan?", o: ["Beijing","Seoul","Tokyo","Bangkok"], a: 2, s: 3},
+            {q: "Who invented the light bulb?", o: ["A.G. Bell","Thomas Edison","Isaac Newton","Albert Einstein"], a: 1, s: 3},
+            {q: "Which gas do humans breathe in?", o: ["Carbon dioxide","Nitrogen","Oxygen","Hydrogen"], a: 2, s: 3},
+            {q: "How many days are there in a leap year?", o: ["364","365","366","367"], a: 2, s: 3},
+            {q: "What is the national sport of India?", o: ["Cricket","Hockey","Football","Kabaddi"], a: 1, s: 3},
+            {q: "Which is the smallest planet in our solar system?", o: ["Mars","Mercury","Venus","Pluto"], a: 1, s: 3},
+            {q: "Who is known as the 'Iron Man of India'?", o: ["Mahatma Gandhi","Sardar Vallabhbhai Patel","Jawaharlal Nehru","Lal Bahadur Shastri"], a: 1, s: 3},
+            {q: "On which date is Republic Day celebrated in India?", o: ["15th Aug","26th Jan","2nd Oct","14th Nov"], a: 1, s: 3},
+            {q: "Which festival marks the victory of Lord Rama over Ravana?", o: ["Diwali","Holi","Dussehra","Navratri"], a: 2, s: 3},
+            {q: "What is the name of India's first satellite?", o: ["INSAT","Aryabhata","Rohini","Bhaskara"], a: 1, s: 3},
+            {q: "How many spokes are in the Ashoka Chakra?", o: ["12 spokes","24 spokes","18 spokes","16 spokes"], a: 1, s: 3}
+        ]
+    };
+
+        /* NAVIGATION LOGIC */
+    function navigateTo(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    /* EXAM INITIALIZATION */
+    function startExam() {
+    if (localStorage.getItem(TEST_LOCK_KEY) === "DONE") {
+        navigateTo('screen-lock');
+        return;
+    }
+
+    localStorage.setItem(TEST_LOCK_KEY, 'DONE');
+    document.getElementById('timer-bar').style.display = 'block';
+    runTimer();
+    loadQuestion();
+    navigateTo('screen-exam');
+}
+
+    /* TIMER ENGINE */
+    function runTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            let h = Math.floor(timeLeft / 3600);
+            let m = Math.floor((timeLeft % 3600) / 60);
+            let s = timeLeft % 60;
+            document.getElementById('timer-bar').innerText = 
+                `Time Remaining: ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            
+            if(timeLeft <= 0) {
+                clearInterval(timer);
+                finishExam();
+            }
+        }, 1000);
+    }
+
+    /* QUESTION LOADER */
+    function loadQuestion() {
+        const data = _0xData.pool[currentQ];
+        document.getElementById('display-section').innerText = _0xData.secs[data.s];
+        document.getElementById('display-counter').innerText = `Question ${currentQ + 1} / 125`;
+        document.getElementById('q-body').innerText = data.q;
+        
+        const visual = document.getElementById('q-visual');
+        visual.innerHTML = data.d ? `<div class="diagram-container">${data.d}</div>` : "";
+
+        const optContainer = document.getElementById('q-options');
+        optContainer.innerHTML = "";
+        data.o.forEach((opt, i) => {
+            const card = document.createElement('div');
+            card.className = 'option-card';
+            card.innerHTML = `<span class="option-prefix">${String.fromCharCode(65+i)}</span> <span>${opt}</span>`;
+            card.onclick = () => recordAndNext(i);
+            optContainer.appendChild(card);
+        });
+    }
+
+    /* SCORING LOGIC */
+    function recordAndNext(choice) {
+        const q = _0xData.pool[currentQ];
+        if(choice === q.a) {
+            correctCount[q.s]++;
+            scoreMap[q.s] += (q.s === 0 ? 3 : 2);
+        }
+
+        if(currentQ < 124) {
+            currentQ++;
+            loadQuestion();
+        } else {
+            finishExam();
+        }
+    }
+
+    /* FINALIZE */
+    function finishExam() {
+        clearInterval(timer);
+        document.getElementById('timer-bar').style.display = 'none';
+        
+        const totalCorrect = correctCount.reduce((a,b) => a+b, 0);
+        const totalMarks = scoreMap.reduce((a,b) => a+b, 0);
+
+        document.getElementById('res-total-correct').innerText = totalCorrect;
+        document.getElementById('res-total-marks').innerText = totalMarks;
+
+        const table = document.getElementById('res-breakdown');
+        table.innerHTML = "";
+        _0xData.secs.forEach((name, i) => {
+            const row = `<tr>
+                <td style="text-align:left; font-weight:bold;">${name}</td>
+                <td>${correctCount[i]} / ${i === 0 ? 50 : 25}</td>
+                <td>${scoreMap[i]}</td>
+            </tr>`;
+            table.innerHTML += row;
+        });
+
+        navigateTo('screen-result');
+    }
+
+    /* SECURITY LOCKS */
+    document.onkeydown = (e) => {
+        if(e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's')) return false;
+    };
+    window.onload = () => {
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        navigateTo('screen-lock');
+    }
+};
+</script>
+</body> </html>
