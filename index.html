@@ -70,7 +70,8 @@
             <thead><tr><th>Section</th><th>Score</th></tr></thead>
             <tbody id="res-body"></tbody>
         </table>
-        <button class="btn" style="margin-top:20px" onclick="window.print()">Print Result</button>
+        <button class="btn" onclick="alert('Printing disabled')">Print Result</button>
+
     </div>
 </div>
 
@@ -223,11 +224,13 @@ const sections = ["Mathematics", "Reasoning", "English", "General Knowledge"];
 
     let currentQ = 0, userAnswers = [], timeLeft = 150 * 60, timer;
 
-    window.onload = () => {
+   window.onload = () => {
     if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
-        switchScreen('result-screen');
+        document.body.innerHTML =
+            "<h2 style='text-align:center;color:red;margin-top:40px;'>This test has already been completed.</h2>";
     }
 };
+
 function startInstructions() {
     const name = document.getElementById('user-name').value;
     if (!name) return alert("Name required!");
@@ -236,8 +239,14 @@ function startInstructions() {
 }
 
 function startExam() {
+    if (localStorage.getItem(TEST_LOCK_KEY) === 'DONE') {
+        alert("This test has already been completed.");
+        return;
+    }
+
     switchScreen('exam-screen');
     render();
+
     timer = setInterval(() => {
         timeLeft--;
         let m = Math.floor(timeLeft / 60);
@@ -314,4 +323,5 @@ function startExam() {
 }
 </script>
 </body>
+
 </html>
