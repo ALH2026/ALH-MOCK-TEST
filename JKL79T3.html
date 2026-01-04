@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALH | AISSEE Class 6 Advanced Mock Test 3</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkFMSCBBSVNTRUUgTW9jayAzIiwKICAic2hvcnRfbmFtZSI6ICJBSVNTRUUiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFhMjM3ZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxYTIzN2UiCn0=">
+    <style>
+        :root { --navy: #1a237e; --orange: #ff6f00; --light: #f5f5f5; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--light); color: #333; overflow-x: hidden; user-select: none; -webkit-user-select: none; }
+        header { background: var(--navy); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; padding: 20px; text-align: center; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; width: 100%; border-top: 5px solid var(--orange); }
+        .btn { background: var(--orange); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; transition: 0.3s; display: inline-block; }
+        .btn:hover { background: #e65100; transform: translateY(-2px); }
+        #exam_screen { padding: 10px; flex-direction: column; align-items: center; text-align: left; }
+        .q-container { background: white; width: 100%; max-width: 800px; padding: 25px; border-radius: 10px; margin-top: 15px; position: relative; }
+        .option { display: block; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 10px 0; cursor: pointer; transition: 0.2s; }
+        .option:hover { background: #fff3e0; border-color: var(--orange); }
+        .option.selected { background: var(--navy); color: white; border-color: var(--navy); }
+        .timer { font-weight: bold; color: var(--orange); font-size: 1.2rem; }
+        .watermark { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 12px; opacity: 0.5; color: #777; pointer-events: none; z-index: 1000; }
+        svg { max-width: 100%; height: auto; margin: 15px 0; border: 1px solid #eee; background: #fff; padding: 10px; }
+        .sec-header { background: #e8eaf6; padding: 5px 15px; border-radius: 5px; font-weight: bold; color: var(--navy); margin-bottom: 10px; }
+        .progress-bar { height: 10px; background: #ddd; width: 100%; border-radius: 5px; margin-bottom: 20px; }
+        .progress-fill { height: 100%; background: var(--orange); width: 0%; border-radius: 5px; transition: 0.3s; }
+        .score-box { font-size: 2rem; color: var(--navy); font-weight: 800; margin: 20px 0; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>
+        <div id="header_title">AISSEE ADVANCED MOCK 3</div>
+        <div id="timer_display" class="timer">150:00</div>
+    </header>
+
+    <div id="welcome_screen" class="screen" style="display: flex;">
+        <div class="card">
+            <h1 style="color:var(--navy)">AISSEE 2026</h1>
+            <p><strong>Entrance Examination - Class 6</strong></p>
+            <p>Mathematics: 50 Qs (150 Marks)<br>Reasoning, English, and GK: 75 Qs (150 Marks)</p>
+            <p>Total Time: 150 Minutes | Total Marks: 300 Marks</p>
+            <button class="btn" onclick="startExam()">START ENTRANCE EXAM</button>
+        </div>
+    </div>
+
+    <div id="exam_screen" class="screen" style="display: none;">
+        <div class="progress-bar"><div id="progress_fill" class="progress-fill"></div></div>
+        <div class="q-container">
+            <div id="section_label" class="sec-header"></div>
+            <div id="question_text" style="font-size: 18px; font-weight: 600; margin-bottom: 20px;"></div>
+            <div id="diagram_area"></div>
+            <div id="options_area"></div>
+            <div style="display:flex; justify-content: space-between; margin-top:30px;">
+                <button class="btn" style="background:#777" onclick="prevQuestion()">Previous</button>
+                <button id="next_btn" class="btn" onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="results_screen" class="screen" style="display: none;">
+        <div class="card">
+            <h2 style="color:var(--navy)">Result Summary</h2>
+            <div id="score_display" class="score-box"></div>
+            <p id="stat_display"></p>
+            <button class="btn" onclick="location.reload()">Return Home</button>
+        </div>
+    </div>
+
+    <div id="locked_screen" class="screen" style="display: none;">
+        <div class="card">
+            <h2 style="color:var(--navy)">Access Denied</h2>
+            <p>You have already completed this test. Re-attempts are prohibited for this session.</p>
+        </div>
+    </div>
+
+    <div class="watermark">© Abhimanyu Learning Hub (ALH) | Unauthorized Copying Prohibited</div>
+
+    <script>
+        const questions = [
+            { q: "In a grocery store, 5 kg of rice and 3 kg of wheat cost ₹430, while 3 kg of rice and 5 kg of wheat cost ₹370. What is the cost of 1 kg of rice?", o: ["₹45", "₹50", "₹55", "₹60"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "A rectangular garden has a path of width 2 meters running around it externally. If the garden measures 20 m x 15 m, what is the area of the path?", o: ["148 sq. m", "152 sq. m", "156 sq. m", "160 sq. m"], a: 1, s: "MATHEMATICS", m: 3 },
+            { 
+                q: "Study the pie chart representation of the Annual Budget Distribution. If the total budget is ₹50,000, how much more is spent on Education than Healthcare?", 
+                o: ["₹8,000", "₹10,000", "₹12,000", "₹15,000"], a: 1, s: "MATHEMATICS", m: 3,
+                svg: `<svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="#eee" stroke="#333"/><path d="M100,100 L100,20 A80,80 0 0,1 176,124 Z" fill="#1a237e"/><path d="M100,100 L176,124 A80,80 0 0,1 100,180 Z" fill="#ff6f00"/><path d="M100,100 L100,180 A80,80 0 0,1 24,124 Z" fill="#4caf50"/><path d="M100,100 L24,124 A80,80 0 0,1 100,20 Z" fill="#f44336"/><text x="105" y="60" font-size="10" fill="white">Education 40%</text><text x="105" y="145" font-size="10" fill="white">Food 25%</text><text x="35" y="145" font-size="10" fill="white">Healthcare 20%</text></svg>`
+            },
+            { q: "A vendor bought oranges at 5 for ₹12 and sold them at 3 for ₹10. If he sold 300 oranges, what was his total profit?", o: ["₹200", "₹240", "₹280", "₹320"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "If 3<sup>x+2</sup> = 729, find the value of 2x.", o: ["8", "16", "32", "64"], a: 0, s: "MATHEMATICS", m: 3 },
+            { q: "A father is 4 times as old as his son. 20 years hence, he will be twice as old as his son. What is the son's present age?", o: ["8 years", "10 years", "12 years", "15 years"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "Three bells toll at intervals of 12, 15, and 18 minutes respectively. If they toll together at 9:00 AM, when will they toll together again?", o: ["10:00 AM", "10:30 AM", "11:00 AM", "12:00 PM"], a: 3, s: "MATHEMATICS", m: 3 },
+            { 
+                q: "Observe the coordinate graph. Point A is at (1,1) and Point B is at (3,4). What is the distance between points A and B?", 
+                o: ["√10 units", "√13 units", "√15 units", "√17 units"], a: 1, s: "MATHEMATICS", m: 3,
+                svg: `<svg width="200" height="200" viewBox="0 0 100 100"><line x1="10" y1="90" x2="95" y2="90" stroke="black"/><line x1="10" y1="90" x2="10" y2="5" stroke="black"/><circle cx="30" cy="70" r="3" fill="blue"/><text x="35" y="75" font-size="6">A(1,1)</text><circle cx="70" cy="10" r="3" fill="red"/><text x="75" y="15" font-size="6">B(3,4)</text><line x1="30" y1="70" x2="70" y2="10" stroke="black" stroke-dasharray="2"/></svg>`
+            },
+            { q: "A swimming pool can be filled by pipe P in 6 hours and by pipe Q in 9 hours. Pipe R can empty it in 12 hours. If all three pipes are opened simultaneously, how long will it take to fill the empty pool?", o: ["7 hours", "7.2 hours", "8 hours", "8.4 hours"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "The sum of three prime numbers is 100. If one of them exceeds another by 36, what is the largest of the three primes?", o: ["37", "41", "43", "47"], a: 3, s: "MATHEMATICS", m: 3 },
+            { q: "A chess tournament has 16 players. Each player plays exactly one game with every other player. How many total games are played?", o: ["105", "110", "115", "120"], a: 3, s: "MATHEMATICS", m: 3 },
+            { q: "3/5 of a number exceeds its 2/5 by 50. What is 4/5 of that number?", o: ["180", "200", "220", "240"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "Look at the geometric progression: 3, 6, 12, 24, ... What is the 8th term?", o: ["256", "348", "384", "512"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "A train passes a stationary observer in 15 seconds and a 250-meter long platform in 35 seconds. What is the length of the train?", o: ["175 meters", "187.5 meters", "200 meters", "212.5 meters"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "In how many ways can 5 different books be arranged on a shelf?", o: ["60", "100", "120", "150"], a: 2, s: "MATHEMATICS", m: 3 },
+            { 
+                q: "Study the Venn diagram: If 15 students study only Music, 18 study only Sports, and 12 study both, how many students are there in total?", 
+                o: ["40", "42", "45", "48"], a: 2, s: "MATHEMATICS", m: 3,
+                svg: `<svg width="200" height="120" viewBox="0 0 200 120"><circle cx="75" cy="60" r="40" fill="none" stroke="blue" stroke-width="2"/><circle cx="125" cy="60" r="40" fill="none" stroke="red" stroke-width="2"/><text x="50" y="65">15</text><text x="95" y="65">12</text><text x="140" y="65">18</text></svg>`
+            },
+            { q: "A number has exactly 8 factors. If the smallest factor is 1 and the largest is 60, what is the number?", o: ["30", "36", "48", "60"], a: 3, s: "MATHEMATICS", m: 3 },
+            { q: "The perimeter of an equilateral triangle is equal to the perimeter of a square. If the side of the triangle is 16 cm, what is the diagonal of the square?", o: ["12√2 cm", "14√2 cm", "16√2 cm", "18√2 cm"], a: 0, s: "MATHEMATICS", m: 3 },
+            { q: "A merchant marks his goods 60% above cost price but allows a discount such that he gains 20%. What discount percentage does he allow?", o: ["20%", "25%", "30%", "35%"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "If log<sub>2</sub>8 + log<sub>4</sub>16 = x, what is the value of x?", o: ["4", "5", "6", "7"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "A box contains red, blue, and green balls in the ratio 3:4:5. If there are 48 balls in total, how many blue balls are there?", o: ["12", "16", "18", "20"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "The average weight of 25 students is 52 kg. If the teacher's weight is included, the average becomes 53 kg. What is the teacher's weight?", o: ["75 kg", "77 kg", "78 kg", "80 kg"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "Observe the number pattern: Row 1: 1; Row 2: 2,3; Row 3: 4,5,6... What is the sum of numbers in Row 7?", o: ["147", "154", "161", "168"], a: 0, s: "MATHEMATICS", m: 3 },
+            { q: "A cylindrical tank has a radius of 7 meters and height of 10 meters. How many liters of water can it hold? (Use π=22/7; 1m<sup>3</sup> = 1000L)", o: ["1,440,000 liters", "1,520,000 liters", "1,540,000 liters", "1,580,000 liters"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "If (x-3)(x+5) = x<sup>2</sup> + ax + b, what is the value of a + b?", o: ["-13", "-12", "-11", "-10"], a: 0, s: "MATHEMATICS", m: 3 },
+            { q: "A digital clock shows the time as 3:15. What is the angle between the hour and minute hands?", o: ["0°", "7.5°", "15°", "22.5°"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "In a classroom, 4/9 of the students are girls. If 12 boys leave, the number of boys becomes 1/3 of the total. How many students were there initially?", o: ["45", "48", "50", "54"], a: 0, s: "MATHEMATICS", m: 3 },
+            { q: "The difference between CI and SI on a sum for 2 years at 10% per annum is ₹100. What is the sum?", o: ["₹8,000", "₹10,000", "₹12,000", "₹15,000"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "A car covers a distance of 300 km. First 100 km at 50 km/hr, next 100 km at 60 km/hr, and last 100 km at 75 km/hr. Average speed?", o: ["58.5 km/hr", "60 km/hr", "61.5 km/hr", "62.5 km/hr"], a: 1, s: "MATHEMATICS", m: 3 },
+            { 
+                q: "Look at the magic square. What number should replace the question mark?", 
+                o: ["1", "2", "3", "4"], a: 1, s: "MATHEMATICS", m: 3,
+                svg: `<svg width="120" height="120" viewBox="0 0 120 120"><rect x="5" y="5" width="110" height="110" fill="none" stroke="black"/><line x1="41" y1="5" x2="41" y2="115" stroke="black"/><line x1="77" y1="5" x2="77" y2="115" stroke="black"/><line x1="5" y1="41" x2="115" y2="41" stroke="black"/><line x1="5" y1="77" x2="115" y2="77" stroke="black"/><text x="18" y="30">8</text><text x="55" y="30">1</text><text x="92" y="30">6</text><text x="18" y="65">3</text><text x="55" y="65">5</text><text x="92" y="65">7</text><text x="18" y="100">4</text><text x="55" y="100">9</text><text x="92" y="100" font-weight="bold">?</text></svg>`
+            },
+            { q: "A student scores 72%, 68%, 80%, and 76% in four subjects. What must he score in the fifth subject to average 75%?", o: ["77%", "79%", "81%", "83%"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "If the price of petrol increases by 25%, by what percentage should consumption be reduced so that expenditure remains unchanged?", o: ["15%", "18%", "20%", "25%"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "A bag contains ₹187 in the form of ₹1, ₹2, and ₹5 coins in ratio 3:4:1. How many ₹2 coins are there?", o: ["44", "48", "52", "56"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "The sum of ages of father and son is 55 years. After 10 years, father will be 3 times old as son. Father's present age?", o: ["40 years", "42 years", "44 years", "45 years"], a: 3, s: "MATHEMATICS", m: 3 },
+            { q: "If √(x+1) + √(x-1) = √(3x), what is the value of x?", o: ["1", "2", "3", "4"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "Altitude to 15cm side of a parallelogram is 12cm. Base is 20cm, what is corresponding altitude?", o: ["8 cm", "9 cm", "10 cm", "11 cm"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "Town population increases 10% annually. Current is 50,000. Population after 2 years?", o: ["58,500", "59,500", "60,500", "61,500"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "If x<sup>2</sup> - 5x + 1 = 0, find x<sup>2</sup> + 1/x<sup>2</sup>.", o: ["21", "23", "25", "27"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "40 liters mixture has milk:water 7:3. How much water added to make 7:5?", o: ["6 liters", "8 liters", "10 liters", "12 liters"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "The fourth proportional to 3, 8, and 9 is:", o: ["18", "21", "24", "27"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "Person invests ₹5,000 at 8% SI. After how many years will amount become ₹7,400?", o: ["5 years", "6 years", "7 years", "8 years"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "If 5 men or 7 women earn ₹1,050/day, how much will 3 men and 4 women earn?", o: ["₹900", "₹930", "₹960", "₹990"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "The sum of the first 50 odd natural numbers is:", o: ["2,400", "2,450", "2,500", "2,550"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "Field 90m x 60m. Man walks diagonally across. Distance covered?", o: ["100 meters", "108 meters", "110 meters", "120 meters"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "If a:b = 3:4 and b:c = 8:9, then a:b:c equals:", o: ["3:4:9", "6:8:9", "12:16:18", "24:32:36"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "School has 840 students. Boys:Girls 11:10. How many more boys than girls?", o: ["35", "40", "45", "50"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "8 pens + 5 pencils = ₹176; 5 pens + 8 pencils = ₹137. Cost of one pen?", o: ["₹15", "₹17", "₹19", "₹21"], a: 1, s: "MATHEMATICS", m: 3 },
+            { q: "Today is Saturday. What day was it 100 days ago?", o: ["Monday", "Tuesday", "Wednesday", "Thursday"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "Digits sum 9. If 27 subtracted, digits reverse. Number?", o: ["45", "54", "63", "72"], a: 2, s: "MATHEMATICS", m: 3 },
+            { q: "A, B, C fill in 4h. A alone 12h, B alone 8h. C alone time?", o: ["10 hours", "12 hours", "14 hours", "16 hours"], a: 1, s: "MATHEMATICS", m: 3 },
+
+            // REASONING (51-75)
+            { q: "PYRAMID -> KBHSDNC. DIAMOND -> ?", o: ["CNSLNMC", "CNSLMNC", "CNSLMOC", "CNSLNOC"], a: 1, s: "REASONING", m: 2 },
+            { q: "Arrange the words in meaningful order: 1. Caterpillar, 2. Butterfly, 3. Egg, 4. Pupa", o: ["3, 1, 4, 2", "1, 3, 4, 2", "3, 4, 1, 2", "1, 4, 3, 2"], a: 0, s: "REASONING", m: 2 },
+            { 
+                q: "Which figure completes the pattern sequence below?", 
+                o: ["[□Δ○]", "[Δ○□]", "[○□Δ]", "[Π○Δ]"], a: 2, s: "REASONING", m: 2,
+                svg: `<svg width="220" height="50" viewBox="0 0 220 50"><text x="10" y="30" font-size="14">[□Δ○]</text><text x="70" y="30" font-size="14">[Δ○□]</text><text x="130" y="30" font-size="14">[○□Δ]</text></svg>`
+            },
+            { q: "In a row of trees, one tree is fifth from either end. How many trees in row?", o: ["8", "9", "10", "11"], a: 1, s: "REASONING", m: 2 },
+            { q: "BUILDING -> 6-21-9-12-4-9-14-7. CONSTRUCTION -> ?", o: ["3-15-14...", "3-15-13...", "3-14-14...", "3-15-14..."], a: 0, s: "REASONING", m: 2 },
+            { q: "Analogy: BDFH : DFHJ :: CEGI : ?", o: ["EGIK", "EGIL", "FHJL", "FHIK"], a: 0, s: "REASONING", m: 2 },
+            { q: "Man says, 'The woman who is singing is my wife's mother's daughter.' Relation?", o: ["Father", "Brother", "Husband", "Uncle"], a: 2, s: "REASONING", m: 2 },
+            { q: "Matrix: 4, 9, 16; 25, 36, 49; 64, 81, ?. Missing?", o: ["90", "96", "100", "121"], a: 2, s: "REASONING", m: 2 },
+            { q: "A man walks 3 km towards East, then turns left and walks 4 km, then turns left again and walks 3 km. How far is he from the starting point?", o: ["3 km", "4 km", "5 km", "7 km"], a: 1, s: "REASONING", m: 2 },
+            { q: "Find the odd term: 11, 13, 17, 19, 23, 27, 29", o: ["11", "17", "23", "27"], a: 3, s: "REASONING", m: 2 },
+            { q: "If a clock shows 6:30, mirror reflection time?", o: ["5:30", "6:30", "7:30", "12:30"], a: 0, s: "REASONING", m: 2 },
+            { 
+                q: "Fold the cube net. Which number will be opposite to 1?", 
+                o: ["2", "3", "4", "6"], a: 2, s: "REASONING", m: 2,
+                svg: `<svg width="150" height="150" viewBox="0 0 150 150"><rect x="40" y="10" width="30" height="30" fill="none" stroke="black"/><text x="50" y="30">2</text><rect x="10" y="40" width="30" height="30" fill="none" stroke="black"/><text x="20" y="60">5</text><rect x="40" y="40" width="30" height="30" fill="none" stroke="black"/><text x="50" y="60">1</text><rect x="70" y="40" width="30" height="30" fill="none" stroke="black"/><text x="80" y="60">3</text><rect x="100" y="40" width="30" height="30" fill="none" stroke="black"/><text x="110" y="60">6</text><rect x="40" y="70" width="30" height="30" fill="none" stroke="black"/><text x="50" y="90">4</text></svg>`
+            },
+            { q: "If 15 $ 3 = 45, 12 $ 4 = 32, then 18 $ 6 = ?", o: ["72", "84", "96", "108"], a: 1, s: "REASONING", m: 2 },
+            { q: "Next in sequence: 1, 1, 2, 3, 5, 8, 13, ?", o: ["18", "19", "20", "21"], a: 3, s: "REASONING", m: 2 },
+            { q: "Complete the series: Z1, Y4, X9, W16, ?", o: ["V20", "V24", "V25", "U25"], a: 2, s: "REASONING", m: 2 },
+            { q: "Interchange letters in CULTIVATOR (1-6, 2-7, etc.). Letter 4th from right?", o: ["T", "I", "V", "A"], a: 0, s: "REASONING", m: 2 },
+            { q: "P, Q, R, S, T in row. P, Q not together. R at end. S next to P. Who is in middle?", o: ["P", "Q", "S", "T"], a: 2, s: "REASONING", m: 2 },
+            { q: "Missing term: AB3, DE6, GH9, JK12, ?", o: ["LM15", "MN15", "LM16", "MN16"], a: 1, s: "REASONING", m: 2 },
+            { 
+                q: "Count the total number of squares in the 3x3 figure below:", 
+                o: ["12", "13", "14", "15"], a: 2, s: "REASONING", m: 2,
+                svg: `<svg width="100" height="100" viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" fill="none" stroke="black"/><line x1="36" y1="10" x2="36" y2="90" stroke="black"/><line x1="63" y1="10" x2="63" y2="90" stroke="black"/><line x1="10" y1="36" x2="90" y2="36" stroke="black"/><line x1="10" y1="63" x2="90" y2="63" stroke="black"/></svg>`
+            },
+            { q: "If CHAIR = 18 and TABLE = 19, then DESK = ?", o: ["12", "13", "14", "15"], a: 2, s: "REASONING", m: 2 },
+            { q: "Which one does not belong: Rectangle, Square, Rhombus, Sphere", o: ["Rectangle", "Square", "Rhombus", "Sphere"], a: 3, s: "REASONING", m: 2 },
+            { q: "Man is 24 years older than son. In 2 years, his age will be twice son's. Son's age?", o: ["20 years", "22 years", "24 years", "26 years"], a: 1, s: "REASONING", m: 2 },
+            { q: "Find the wrong term: 1, 4, 9, 16, 25, 35, 49", o: ["4", "16", "25", "35"], a: 3, s: "REASONING", m: 2 },
+            { q: "MONDAY = 487312; TUESDAY = 6783512. SUNDAY = ?", o: ["381312", "481312", "581312", "781312"], a: 2, s: "REASONING", m: 2 },
+            { q: "A girl walks 10km towards South, then right 5km, then right 15km. Far and direction?", o: ["5√2 km NW", "5√2 km SW", "10 km West", "5 km SW"], a: 0, s: "REASONING", m: 2 },
+
+            // ENGLISH (76-100)
+            { q: "Identify correctly spelled word:", o: ["Liaison", "Liasion", "Liason", "Liaeson"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Meaning of 'Ephemeral':", o: ["Permanent", "Temporary", "Eternal", "Lasting"], a: 1, s: "ENGLISH", m: 2 },
+            { q: "Neither of the two boys ___ present in the class.", o: ["was", "were", "are", "is"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Sentence type: 'How beautiful the sunset is!'", o: ["Interrogative", "Imperative", "Exclamatory", "Declarative"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Select antonym of 'Optimistic':", o: ["Hopeful", "Positive", "Pessimistic", "Confident"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Which sentence uses correct punctuation?", o: ["He said, I am home.", "He said, \"I am home\".", "He said, \"I am home.\"", "He said \"I am home.\""], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Collective noun for 'a group of ships':", o: ["Fleet", "Herd", "Flock", "Swarm"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Correct preposition: She is afraid ___ dogs.", o: ["from", "of", "with", "by"], a: 1, s: "ENGLISH", m: 2 },
+            { q: "Identify finite verb: 'The boy playing in the garden is my brother.'", o: ["playing", "in", "is", "brother"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Select correct form: The news ___ not good today.", o: ["is", "are", "were", "have been"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Correct spelled word:", o: ["Questionaire", "Questionnaire", "Questionairre", "Questionare"], a: 1, s: "ENGLISH", m: 2 },
+            { q: "Idiom 'Burn the midnight oil' means:", o: ["Waste oil", "Work late at night", "Burn something", "Stay awake all night"], a: 1, s: "ENGLISH", m: 2 },
+            { q: "Identify subject: 'Running every morning keeps me healthy.'", o: ["Running every morning", "Running", "morning", "keeps me healthy"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Synonym of 'Cordial':", o: ["Hostile", "Friendly", "Cold", "Distant"], a: 1, s: "ENGLISH", m: 2 },
+            { q: "If I ___ rich, I would travel the world.", o: ["am", "was", "were", "will be"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Degree comparison of 'Little':", o: ["Littler, Littlest", "Lesser, Least", "More little, Most little", "Less, Least"], a: 3, s: "ENGLISH", m: 2 },
+            { q: "Type of phrase: 'Walking in the park, I met my friend.'", o: ["Noun phrase", "Adjective phrase", "Adverb phrase", "Participle phrase"], a: 3, s: "ENGLISH", m: 2 },
+            { q: "Correct sentence:", o: ["One of have", "One of has", "One of had", "One of were"], a: 1, s: "ENGLISH", m: 2 },
+            { q: "Opposite of 'Transparent':", o: ["Clear", "Visible", "Opaque", "Bright"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Postponed ___ next week.", o: ["until", "for", "since", "from"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Demonstrative pronoun in: 'This is my book, and that is yours.'", o: ["my", "This", "yours", "Both(b/c) incorrect"], a: 3, s: "ENGLISH", m: 2 },
+            { q: "Correct spelling:", o: ["Bureaucracy", "Beaurocracy", "Burocracy", "Beaurocracy"], a: 0, s: "ENGLISH", m: 2 },
+            { q: "Indirect speech: She said, 'I will come tomorrow.'", o: ["will", "would", "would... next day", "will... next day"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Which word means 'talkative'?", o: ["Taciturn", "Silent", "Garrulous", "Quiet"], a: 2, s: "ENGLISH", m: 2 },
+            { q: "Article: ___ honest man is respected by all.", o: ["A", "An", "The", "No article"], a: 1, s: "ENGLISH", m: 2 },
+
+            // GK (101-125)
+            { q: "Which scientist discovered Penicillin?", o: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Albert Einstein"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Mount Everest is in which range?", o: ["Alps", "Andes", "Himalayas", "Rockies"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Fundamental rights in Indian Constitution?", o: ["5", "6", "7", "8"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Chemical formula for common salt?", o: ["NaCl", "KCl", "CaCl2", "MgCl2"], a: 0, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Who wrote 'Hamlet'?", o: ["Shaw", "Shakespeare", "Wilde", "Marlowe"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Largest producer of coffee in India?", o: ["Kerala", "Karnataka", "Tamil Nadu", "Andhra Pradesh"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Retrograde rotation planet?", o: ["Mars", "Venus", "Uranus", "Neptune"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Non-Cooperation Movement launched in:", o: ["1919", "1920", "1921", "1922"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Currency of Russia?", o: ["Pound", "Ruble", "Euro", "Franc"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "System including heart and blood vessels?", o: ["Respiratory", "Digestive", "Circulatory", "Nervous"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Red Fort location?", o: ["Agra", "Delhi", "Jaipur", "Lucknow"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "First Education Minister of India?", o: ["Ambedkar", "Azad", "Patel", "Prasad"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Main gas air we breathe out?", o: ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Great Wall of China built against invasions from?", o: ["South", "North", "East", "West"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Grand Old Man of India?", o: ["Tilak", "Naoroji", "Gokhale", "Rai"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Universal Donor blood group?", o: ["A+", "B+", "AB+", "O-"], a: 3, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Olympic Games held every ___ years.", o: ["2", "3", "4", "5"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Longest national highway in India?", o: ["NH 7", "NH 44", "NH 2", "NH 8"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Nightingale of India?", o: ["Mangeshkar", "Naidu", "Indira", "Teresa"], a: 1, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "International Court of Justice location?", o: ["New York", "Geneva", "The Hague", "Brussels"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Vitamin deficiency causes Scurvy?", o: ["Vit A", "Vit B", "Vit C", "Vit D"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Simon Commission year:", o: ["1925", "1927", "1928", "1930"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Largest desert in the world?", o: ["Sahara", "Arabian", "Gobi", "Antarctic"], a: 3, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Who invented World Wide Web?", o: ["Gates", "Jobs", "Berners-Lee", "Zuckerberg"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 },
+            { q: "Gas used in preparation of soft drinks?", o: ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"], a: 2, s: "GENERAL KNOWLEDGE", m: 2 }
+        ];
+
+        let currentIdx = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeLeft = 150 * 60;
+        let timerInterval;
+
+        window.startExam = function() {
+            if (localStorage.getItem('Set_ID_Locked_Mock3_Final')) {
+                document.getElementById('welcome_screen').style.display = 'none';
+                document.getElementById('locked_screen').style.display = 'flex';
+                return;
+            }
+            document.getElementById('welcome_screen').style.display = 'none';
+            document.getElementById('exam_screen').style.display = 'flex';
+            renderQuestion();
+            startTimer();
+        };
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('section_label').innerText = `${q.s} | Question ${currentIdx + 1} of 125`;
+            document.getElementById('question_text').innerHTML = q.q;
+            document.getElementById('diagram_area').innerHTML = q.svg || "";
+            
+            const optionsHtml = q.o.map((opt, i) => `
+                <div class="option ${userAnswers[currentIdx] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+                    ${String.fromCharCode(65 + i)}. ${opt}
+                </div>
+            `).join('');
+            
+            document.getElementById('options_area').innerHTML = optionsHtml;
+            document.getElementById('progress_fill').style.width = `${((currentIdx + 1) / 125) * 100}%`;
+            document.getElementById('next_btn').innerText = (currentIdx === 124) ? "SUBMIT TEST" : "Next";
+        }
+
+        window.selectOption = function(idx) {
+            userAnswers[currentIdx] = idx;
+            renderQuestion();
+        }
+
+        window.nextQuestion = function() {
+            if (currentIdx < 124) {
+                currentIdx++;
+                renderQuestion();
+            } else {
+                submitExam();
+            }
+        }
+
+        window.prevQuestion = function() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                renderQuestion();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                document.getElementById('timer_display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                if (timeLeft <= 0) submitExam();
+            }, 1000);
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            let totalScore = 0;
+            let correct = 0;
+            questions.forEach((q, i) => {
+                if (userAnswers[i] === q.a) {
+                    totalScore += q.m;
+                    correct++;
+                }
+            });
+            
+            localStorage.setItem('Set_ID_Locked_Mock3_Final', 'true');
+            document.getElementById('exam_screen').style.display = 'none';
+            document.getElementById('results_screen').style.display = 'flex';
+            document.getElementById('score_display').innerText = `${totalScore} / 300`;
+            document.getElementById('stat_display').innerText = `Correct Questions: ${correct} out of 125`;
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) e.preventDefault();
+        });
+
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('fetch', function(event) {});`;
+            const blob = new Blob([swCode], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        }
+    </script>
+</body>
+</html>
