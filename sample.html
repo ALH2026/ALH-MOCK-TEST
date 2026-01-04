@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALH | AISSEE Student Assessment Mock Test</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkFMSCBBSVNTRUUgU3R1ZGVudCBBU1NFU1NNRU5UIiwKICAic2hvcnRfbmFtZSI6ICJBSVNTRUUiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFhMjM3ZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxYTIzN2UiCn0=">
+    <style>
+        :root { --navy: #1a237e; --orange: #ff6f00; --light: #f5f5f5; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--light); color: #333; overflow-x: hidden; user-select: none; -webkit-user-select: none; }
+        header { background: var(--navy); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; padding: 20px; text-align: center; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; width: 100%; border-top: 5px solid var(--orange); }
+        .btn { background: var(--orange); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; transition: 0.3s; display: inline-block; }
+        .btn:hover { background: #e65100; transform: translateY(-2px); }
+        #exam_screen { padding: 10px; flex-direction: column; align-items: center; text-align: left; }
+        .q-container { background: white; width: 100%; max-width: 800px; padding: 25px; border-radius: 10px; margin-top: 15px; position: relative; }
+        .option { display: block; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 10px 0; cursor: pointer; transition: 0.2s; }
+        .option:hover { background: #fff3e0; border-color: var(--orange); }
+        .option.selected { background: var(--navy); color: white; border-color: var(--navy); }
+        .timer { font-weight: bold; color: var(--orange); font-size: 1.2rem; }
+        .watermark { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 12px; opacity: 0.5; color: #777; pointer-events: none; z-index: 1000; }
+        svg { max-width: 100%; height: auto; margin: 15px 0; border: 1px solid #eee; background: #fff; padding: 10px; }
+        .sec-header { background: #e8eaf6; padding: 5px 15px; border-radius: 5px; font-weight: bold; color: var(--navy); margin-bottom: 10px; }
+        .progress-bar { height: 10px; background: #ddd; width: 100%; border-radius: 5px; margin-bottom: 20px; }
+        .progress-fill { height: 100%; background: var(--orange); width: 0%; border-radius: 5px; transition: 0.3s; }
+        .score-box { font-size: 2rem; color: var(--navy); font-weight: 800; margin: 20px 0; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>
+        <div id="header_title">AISSEE STUDENT ASSESSMENT</div>
+        <div id="timer_display" class="timer">120:00</div>
+    </header>
+
+    <div id="welcome_screen" class="screen" style="display: flex;">
+        <div class="card">
+            <h1 style="color:var(--navy)">AISSEE CLASS 6</h1>
+            <p><strong>Mock Test Paper (Full Syllabus)</strong></p>
+            <p>Total Questions: 50 | Total Marks: 50</p>
+            <p>Time Duration: 120 Minutes</p>
+            <button class="btn" onclick="startExam()">START ASSESSMENT</button>
+        </div>
+    </div>
+
+    <div id="exam_screen" class="screen" style="display: none;">
+        <div class="progress-bar"><div id="progress_fill" class="progress-fill"></div></div>
+        <div class="q-container">
+            <div id="section_label" class="sec-header"></div>
+            <div id="question_text" style="font-size: 18px; font-weight: 600; margin-bottom: 20px;"></div>
+            <div id="diagram_area"></div>
+            <div id="options_area"></div>
+            <div style="display:flex; justify-content: space-between; margin-top:30px;">
+                <button class="btn" style="background:#777" onclick="prevQuestion()">Previous</button>
+                <button id="next_btn" class="btn" onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="results_screen" class="screen" style="display: none;">
+        <div class="card">
+            <h2 style="color:var(--navy)">Assessment Results</h2>
+            <div id="score_display" class="score-box"></div>
+            <p id="stat_display"></p>
+            <button class="btn" onclick="location.reload()">Return Home</button>
+        </div>
+    </div>
+
+    <div id="locked_screen" class="screen" style="display: none;">
+        <div class="card">
+            <h2 style="color:var(--navy)">Test Completed</h2>
+            <p>You have already completed this assessment. Re-attempts are prohibited.</p>
+        </div>
+    </div>
+
+    <div class="watermark">© Abhimanyu Learning Hub (ALH) | Unauthorized Copying Prohibited</div>
+
+    <script>
+        const questions = [
+            // MATHEMATICS (Q1 - Q20)
+            { q: "If a number is multiplied by 12 and then divided by 4, the result is 48. What is the original number?", o: ["12", "16", "18", "20"], a: 1, s: "MATHEMATICS" },
+            { q: "The sum of three consecutive odd numbers is 87. What is the middle number?", o: ["27", "29", "31", "33"], a: 1, s: "MATHEMATICS" },
+            { q: "A rectangular garden is 15 meters long and 8 meters wide. What is the cost of fencing it at ₹25 per meter?", o: ["₹1,050", "₹1,150", "₹1,200", "₹1,250"], a: 1, s: "MATHEMATICS" },
+            { q: "What is the value of: 2.5 × 4 + 3.6 ÷ 1.2?", o: ["12", "13", "14", "15"], a: 1, s: "MATHEMATICS" },
+            { q: "The LCM of 12, 15, and 20 is:", o: ["60", "80", "100", "120"], a: 0, s: "MATHEMATICS" },
+            { q: "If 5/8 of a number is 45, what is 3/4 of the same number?", o: ["48", "50", "54", "56"], a: 2, s: "MATHEMATICS" },
+            { q: "A car travels 210 km in 3 hours. How far will it travel in 6 hours at the same speed?", o: ["350 km", "400 km", "420 km", "450 km"], a: 2, s: "MATHEMATICS" },
+            { q: "Find the perimeter of a square whose area is 144 sq. cm.", o: ["36 cm", "40 cm", "48 cm", "52 cm"], a: 2, s: "MATHEMATICS" },
+            { q: "The area of a triangle with base 16 cm and height 12 cm is:", o: ["84 sq. cm", "90 sq. cm", "92 sq. cm", "96 sq. cm"], a: 3, s: "MATHEMATICS" },
+            { q: "If 12 pens cost ₹180, how many pens can be bought for ₹240?", o: ["14", "16", "18", "20"], a: 1, s: "MATHEMATICS" },
+            { q: "The average of 5 numbers is 24. If one more number is added, the new average becomes 23. What is the 6th number?", o: ["12", "15", "16", "18"], a: 3, s: "MATHEMATICS" },
+            { 
+                q: "What is the angle between the hands of the clock at 3 o'clock?", 
+                o: ["90°", "85°", "80°", "75°"], a: 0, s: "MATHEMATICS",
+                svg: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="black" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="20" stroke="black" stroke-width="2"/><line x1="50" y1="50" x2="80" y2="50" stroke="black" stroke-width="3"/><text x="47" y="15" font-size="8">12</text><text x="85" y="53" font-size="8">3</text></svg>`
+            },
+            { q: "A shopkeeper bought a chair for ₹450 and sold it for ₹500. Find his profit or loss.", o: ["₹50 profit", "₹50 loss", "₹40 profit", "₹40 loss"], a: 0, s: "MATHEMATICS" },
+            { q: "The average of the first 10 even natural numbers is:", o: ["10", "11", "12", "13"], a: 1, s: "MATHEMATICS" },
+            { q: "The sum of 2/5, 1/3, and 1/6 is:", o: ["11/15", "13/15", "23/30", "29/30"], a: 3, s: "MATHEMATICS" },
+            { q: "If the product of two numbers is 1800 and their HCF is 6, find their LCM.", o: ["250", "300", "350", "400"], a: 1, s: "MATHEMATICS" },
+            { q: "The perimeter of a rectangle is 240 cm. If its length is 54 cm, what is its breadth?", o: ["62 cm", "64 cm", "66 cm", "68 cm"], a: 2, s: "MATHEMATICS" },
+            { q: "A tank is 3/4 full. If 30 liters are added, it becomes full. What is the capacity of the tank?", o: ["90 liters", "120 liters", "150 liters", "180 liters"], a: 1, s: "MATHEMATICS" },
+            { q: "If yesterday was Friday, what day will it be after 15 days from today?", o: ["Thursday", "Friday", "Saturday", "Sunday"], a: 2, s: "MATHEMATICS" },
+            { q: "The temperature at midnight was -5°C. If it increased by 6°C by morning, what is the new temperature?", o: ["-1°C", "0°C", "1°C", "2°C"], a: 2, s: "MATHEMATICS" },
+
+            // REASONING (Q21 - Q30)
+            { q: "Find the odd one out:", o: ["Circle", "Square", "Triangle", "Rectangle"], a: 0, s: "REASONING" },
+            { q: "Complete the pattern: 2, 4, 8, 16, ?", o: ["24", "28", "30", "32"], a: 3, s: "REASONING" },
+            { q: "If BOOK is coded as CPPL, then PEN is coded as:", o: ["QFO", "QFO", "RGP", "QFP"], a: 0, s: "REASONING" },
+            { q: "Which word does NOT belong with the others?", o: ["Carrot", "Potato", "Tomato", "Onion"], a: 2, s: "REASONING" },
+            { q: "Find the missing number in the series: 5, 10, 15, 20, ?", o: ["22", "24", "25", "26"], a: 2, s: "REASONING" },
+            { q: "In a certain code, CAT is written as 3120. How is DOG written?", o: ["4157", "4158", "5167", "5168"], a: 0, s: "REASONING" },
+            { q: "If North becomes West, what does South become?", o: ["East", "North", "West", "South"], a: 0, s: "REASONING" },
+            { q: "Identify the missing figure in the sequence: ○, □, ○, □, ?", o: ["○", "□", "△", "◊"], a: 0, s: "REASONING" },
+            { q: "Pointing to a lady, a man said, 'She is the daughter of my mother'. Who is the lady to the man?", o: ["Mother", "Daughter", "Sister", "Aunt"], a: 2, s: "REASONING" },
+            { q: "Find the wrong number in the series: 1, 4, 9, 16, 20, 36", o: ["9", "16", "20", "36"], a: 2, s: "REASONING" },
+
+            // ENGLISH (Q31 - Q40)
+            { q: "Identify the noun in the sentence: 'The boy is playing.'", o: ["The", "boy", "is", "playing"], a: 1, s: "ENGLISH" },
+            { q: "What is the plural of 'Child'?", o: ["Childs", "Children", "Childrens", "Childes"], a: 1, s: "ENGLISH" },
+            { q: "Choose the correct spelling:", o: ["Recieve", "Receive", "Recive", "Receve"], a: 1, s: "ENGLISH" },
+            { q: "Antonym of 'Beautiful' is:", o: ["Pretty", "Lovely", "Ugly", "Nice"], a: 2, s: "ENGLISH" },
+            { q: "Identify the verb in the sentence: 'She sings a song.'", o: ["She", "sings", "a", "song"], a: 1, s: "ENGLISH" },
+            { q: "Fill in the blank: 'He is ____ honest man.'", o: ["a", "an", "the", "no article"], a: 1, s: "ENGLISH" },
+            { q: "Choose the synonym of 'Quick':", o: ["Slow", "Fast", "Lazy", "Hard"], a: 1, s: "ENGLISH" },
+            { q: "What is the past tense of 'Go'?", o: ["Goes", "Gone", "Went", "Going"], a: 2, s: "ENGLISH" },
+            { q: "Identify the adjective in the sentence: 'The big elephant is gray.'", o: ["elephant", "big", "is", "gray"], a: 1, s: "ENGLISH" },
+            { q: "Fill in the blank: 'They ____ going to school.'", o: ["is", "am", "are", "was"], a: 2, s: "ENGLISH" },
+
+            // GENERAL KNOWLEDGE (Q41 - Q50)
+            { q: "Who is known as the Father of the Nation?", o: ["Jawaharlal Nehru", "Mahatma Gandhi", "Sardar Patel", "Subhas Chandra Bose"], a: 1, s: "GK" },
+            { q: "Which is the capital city of India?", o: ["Mumbai", "Kolkata", "New Delhi", "Chennai"], a: 2, s: "GK" },
+            { q: "Which planet is known as the Red Planet?", o: ["Venus", "Mars", "Jupiter", "Saturn"], a: 1, s: "GK" },
+            { q: "The smallest state in India by area is:", o: ["Goa", "Sikkim", "Tripura", "Manipur"], a: 0, s: "GK" },
+            { q: "Who wrote the National Anthem of India?", o: ["Bankim Chandra Chatterjee", "Rabindranath Tagore", "Sarojini Naidu", "Lata Mangeshkar"], a: 1, s: "GK" },
+            { q: "Which is the largest animal on Earth?", o: ["Elephant", "Blue Whale", "Giraffe", "Shark"], a: 1, s: "GK" },
+            { q: "What is the currency of India?", o: ["Dollar", "Euro", "Rupee", "Rupiah"], a: 2, s: "GK" },
+            { q: "Which Indian state is known as the 'Land of Rising Sun'?", o: ["Assam", "Arunachal Pradesh", "Manipur", "Meghalaya"], a: 1, s: "GK" },
+            { q: "Who was the first woman Prime Minister of India?", o: ["Sarojini Naidu", "Indira Gandhi", "Pratibha Patil", "Sushma Swaraj"], a: 1, s: "GK" },
+            { q: "The largest ocean in the world is:", o: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"], a: 3, s: "GK" }
+        ];
+
+        let currentIdx = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeLeft = 120 * 60;
+        let timerInterval;
+
+        window.startExam = function() {
+            if (localStorage.getItem('ALH_Sample_Mock_Done')) {
+                document.getElementById('welcome_screen').style.display = 'none';
+                document.getElementById('locked_screen').style.display = 'flex';
+                return;
+            }
+            document.getElementById('welcome_screen').style.display = 'none';
+            document.getElementById('exam_screen').style.display = 'flex';
+            renderQuestion();
+            startTimer();
+        };
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('section_label').innerText = `${q.s} | Question ${currentIdx + 1} of ${questions.length}`;
+            document.getElementById('question_text').innerHTML = q.q;
+            document.getElementById('diagram_area').innerHTML = q.svg || "";
+            
+            const optionsHtml = q.o.map((opt, i) => `
+                <div class="option ${userAnswers[currentIdx] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+                    ${String.fromCharCode(65 + i)}. ${opt}
+                </div>
+            `).join('');
+            
+            document.getElementById('options_area').innerHTML = optionsHtml;
+            document.getElementById('progress_fill').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
+            document.getElementById('next_btn').innerText = (currentIdx === questions.length - 1) ? "SUBMIT TEST" : "Next";
+        }
+
+        window.selectOption = function(idx) {
+            userAnswers[currentIdx] = idx;
+            renderQuestion();
+        };
+
+        window.nextQuestion = function() {
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                renderQuestion();
+            } else {
+                submitExam();
+            }
+        };
+
+        window.prevQuestion = function() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                renderQuestion();
+            }
+        };
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                document.getElementById('timer_display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                if (timeLeft <= 0) submitExam();
+            }, 1000);
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            let score = 0;
+            questions.forEach((q, i) => {
+                if (userAnswers[i] === q.a) score++;
+            });
+            
+            localStorage.setItem('ALH_Sample_Mock_Done', 'true');
+            document.getElementById('exam_screen').style.display = 'none';
+            document.getElementById('results_screen').style.display = 'flex';
+            document.getElementById('score_display').innerText = `${score} / ${questions.length}`;
+            document.getElementById('stat_display').innerText = `Total Correct: ${score} questions.`;
+        }
+
+        // Security logic
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key==='c' || e.key==='v' || e.key==='u' || e.key==='s')) e.preventDefault();
+        });
+
+        // PWA functionality
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('fetch', function(event) {});`;
+            const blob = new Blob([swCode], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        }
+    </script>
+</body>
+</html>
